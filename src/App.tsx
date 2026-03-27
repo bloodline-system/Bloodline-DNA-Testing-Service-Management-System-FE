@@ -1,21 +1,22 @@
-import { BrowserRouter, Routes, Route } from "react-router";
-import HomePage from "./pages/HomePage";
-import SignInPage from "./pages/SignInPage";
-import SignUpPage from "./pages/SignUpPage";
 import { Toaster } from "sonner";
+import AppRoutes from "./routes";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { queryClient } from "./lib/queryClient";
 
 const App = () => {
   return (
-    <>
-      <Toaster richColors />
-      <BrowserRouter>
-        <Routes>
-          <Route index element={<HomePage />} />
-          <Route path="/sign-in" element={<SignInPage />} />
-          <Route path="/sign-up" element={<SignUpPage />} />
-        </Routes>
-      </BrowserRouter>
-    </>
+    <QueryClientProvider client={queryClient}>
+      <Toaster
+        richColors
+        position="top-right"
+        expand
+        closeButton
+        duration={3000}
+      />
+      <AppRoutes />
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
   );
 };
 
