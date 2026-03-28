@@ -9,7 +9,7 @@
   --card-foreground: oklch(0.3211 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.3211 0 0);
-  --primary: oklch(0.6231 0.188 259.8145);
+  --primary: #3b76f6;
   --primary-foreground: oklch(1 0 0);
   --secondary: oklch(0.967 0.0029 264.5419);
   --secondary-foreground: oklch(0.4461 0.0263 256.8018);
@@ -59,6 +59,11 @@
   --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
   --tracking-normal: 0em;
   --spacing: 0.25rem;
+  --gradient-blue: radial-gradient(
+    125% 125% at 50% 10%,
+    #fff 40%,
+    #3b76f6 100%
+  );
 }
 
 .dark {
@@ -116,6 +121,7 @@
   --shadow-xl:
     0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 8px 10px -1px hsl(0 0% 0% / 0.1);
   --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
+  --gradient-blue: radial-gradient(125% 125% at 50% 10%, #fff 40%, #3b71e5 50%);
 }
 
 @theme inline {
@@ -177,5 +183,11 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .bg-gradient-blue {
+    background: var(--gradient-blue);
   }
 }
