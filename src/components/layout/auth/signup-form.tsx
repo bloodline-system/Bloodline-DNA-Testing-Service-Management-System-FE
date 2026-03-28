@@ -3,74 +3,202 @@ import { Button } from "@/components/ui/button";
 import {
   Field,
   FieldDescription,
+  FieldError,
   FieldGroup,
   FieldLabel,
   FieldSeparator,
 } from "@/components/ui/field";
+import { GridFields } from "@/components/ui/grid-fields";
 import { Input } from "@/components/ui/input";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useSignUpMutation } from "@/services/auth/auth.queries";
+import { getApiErrorMessage } from "@/lib/api-error";
+
+const signupSchema = z
+  .object({
+    firstName: z.string().trim().min(1, "First name is required."),
+    lastName: z.string().trim().min(1, "Last name is required."),
+    email: z.email("Please enter a valid email address."),
+    username: z
+      .string()
+      .trim()
+      .min(3, "Username must be at least 3 characters long."),
+    password: z.string().min(8, "Password must be at least 8 characters long."),
+    confirmPassword: z.string().min(8, "Please confirm your password."),
+  })
+  .refine((values) => values.password === values.confirmPassword, {
+    message: "Passwords do not match.",
+    path: ["confirmPassword"],
+  });
+
+type SignupFormValues = z.infer<typeof signupSchema>;
+
+type SignupFormProps = Omit<React.ComponentProps<"form">, "onSubmit"> & {
+  onSubmit?: (values: SignupFormValues) => void | Promise<void>;
+  onSignupSuccess?: (payload: { email: string; signUpId: string }) => void;
+};
 
 export function SignupForm({
   className,
+  onSubmit,
+  onSignupSuccess,
   ...props
-}: React.ComponentProps<"form">) {
+}: SignupFormProps) {
+  const navigate = useNavigate();
+  const signUpMutation = useSignUpMutation();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting, isDirty, isValid },
+  } = useForm<SignupFormValues>({
+    mode: "onChange",
+    resolver: zodResolver(signupSchema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "example@email.com",
+      username: "",
+      password: "",
+      confirmPassword: "",
+    },
+  });
+
+  const handleFormSubmit = async (values: SignupFormValues) => {
+    const { email } = values;
+
+    try {
+      const signUpId = await signUpMutation.mutateAsync(values);
+      await onSubmit?.(values);
+
+      if (onSignupSuccess) {
+        onSignupSuccess({ email, signUpId });
+        return;
+      }
+
+      navigate("/sign-in");
+    } catch {
+      // Errors are surfaced via mutation state and toast in the hook.
+    }
+  };
+
   return (
-    <form className={cn("flex flex-col gap-6", className)} {...props}>
+    <form
+      className={cn("flex flex-col gap-6", className)}
+      onSubmit={handleSubmit(handleFormSubmit)}
+      {...props}
+    >
       <FieldGroup>
-        <div className="flex flex-col items-center gap-1 text-center">
-          <h1 className="text-2xl font-bold">Create your account</h1>
-          <p className="text-sm text-balance text-muted-foreground">
-            Fill in the form below to create your account
+        <div className="flex flex-col gap-1">
+          <h1 className="text-2xl font-bold text-primary">Get Started</h1>
+          <p className="text-sm text-balance text-muted-foreground font-bold">
+            It's free to signup and only takes a minute.
           </p>
         </div>
-        <Field>
-          <FieldLabel htmlFor="name">Full Name</FieldLabel>
-          <Input
-            id="name"
-            type="text"
-            placeholder="John Doe"
-            required
-            className="bg-background"
-          />
-        </Field>
-        <Field>
+        <GridFields>
+          <Field data-invalid={Boolean(errors.firstName)}>
+            <FieldLabel htmlFor="firstName">First Name</FieldLabel>
+            <Input
+              id="firstName"
+              type="text"
+              placeholder="John"
+              aria-invalid={Boolean(errors.firstName)}
+              {...register("firstName")}
+              className="bg-background"
+            />
+            <FieldError errors={[errors.firstName]} />
+          </Field>
+          <Field data-invalid={Boolean(errors.lastName)}>
+            <FieldLabel htmlFor="lastName">Last Name</FieldLabel>
+            <Input
+              id="lastName"
+              type="text"
+              placeholder="Doe"
+              aria-invalid={Boolean(errors.lastName)}
+              {...register("lastName")}
+              className="bg-background"
+            />
+            <FieldError errors={[errors.lastName]} />
+          </Field>
+        </GridFields>
+        <Field data-invalid={Boolean(errors.email)}>
           <FieldLabel htmlFor="email">Email</FieldLabel>
           <Input
             id="email"
             type="email"
             placeholder="m@example.com"
-            required
+            aria-invalid={Boolean(errors.email)}
+            {...register("email")}
             className="bg-background"
           />
           <FieldDescription>
             We&apos;ll use this to contact you. We will not share your email
             with anyone else.
           </FieldDescription>
+          <FieldError errors={[errors.email]} />
         </Field>
-        <Field>
+        <Field data-invalid={Boolean(errors.username)}>
+          <FieldLabel htmlFor="username">Username</FieldLabel>
+          <Input
+            id="username"
+            type="text"
+            placeholder="johndoe"
+            aria-invalid={Boolean(errors.username)}
+            {...register("username")}
+            className="bg-background"
+          />
+          <FieldDescription>
+            Choose a unique username for your account.
+          </FieldDescription>
+          <FieldError errors={[errors.username]} />
+        </Field>
+        <Field data-invalid={Boolean(errors.password)}>
           <FieldLabel htmlFor="password">Password</FieldLabel>
           <Input
             id="password"
             type="password"
-            required
+            aria-invalid={Boolean(errors.password)}
+            {...register("password")}
             className="bg-background"
           />
           <FieldDescription>
             Must be at least 8 characters long.
           </FieldDescription>
+          <FieldError errors={[errors.password]} />
         </Field>
-        <Field>
-          <FieldLabel htmlFor="confirm-password">Confirm Password</FieldLabel>
+        <Field data-invalid={Boolean(errors.confirmPassword)}>
+          <FieldLabel htmlFor="confirmPassword">Confirm Password</FieldLabel>
           <Input
-            id="confirm-password"
+            id="confirmPassword"
             type="password"
-            required
+            aria-invalid={Boolean(errors.confirmPassword)}
+            {...register("confirmPassword")}
             className="bg-background"
           />
-          <FieldDescription>Please confirm your password.</FieldDescription>
+          <FieldError errors={[errors.confirmPassword]} />
         </Field>
         <Field>
-          <Button type="submit">Create Account</Button>
+          <Button
+            type="submit"
+            disabled={
+              signUpMutation.isPending || isSubmitting || !isDirty || !isValid
+            }
+          >
+            {signUpMutation.isPending || isSubmitting
+              ? "Creating Account..."
+              : "Create Account"}
+          </Button>
+          {signUpMutation.isError ? (
+            <FieldDescription className="text-destructive">
+              {getApiErrorMessage(
+                signUpMutation.error,
+                "Unable to create account.",
+              )}
+            </FieldDescription>
+          ) : null}
         </Field>
         <FieldSeparator>Or continue with</FieldSeparator>
         <Field>
@@ -84,7 +212,10 @@ export function SignupForm({
             Sign up with GitHub
           </Button>
           <FieldDescription className="px-6 text-center">
-            Already have an account? <Link to="/sign-in">Sign in</Link>
+            Already have an account?
+            <Link to="/sign-in" className="underline underline-offset-4">
+              Sign in
+            </Link>
           </FieldDescription>
         </Field>
       </FieldGroup>

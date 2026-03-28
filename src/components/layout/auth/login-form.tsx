@@ -3,19 +3,52 @@ import { Button } from "@/components/ui/button";
 import {
   Field,
   FieldDescription,
+  FieldError,
   FieldGroup,
   FieldLabel,
   FieldSeparator,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 
-export function LoginForm({
-  className,
-  ...props
-}: React.ComponentProps<"form">) {
+const loginSchema = z.object({
+  email: z.email("Please enter a valid email address."),
+  password: z.string().min(1, "Password is required."),
+});
+
+type LoginFormValues = z.infer<typeof loginSchema>;
+
+type LoginFormProps = Omit<React.ComponentProps<"form">, "onSubmit"> & {
+  onSubmit?: (values: LoginFormValues) => void | Promise<void>;
+};
+
+export function LoginForm({ className, onSubmit, ...props }: LoginFormProps) {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting, isDirty, isValid },
+  } = useForm<LoginFormValues>({
+    mode: "all",
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const handleFormSubmit = async (values: LoginFormValues) => {
+    await onSubmit?.(values);
+  };
+
   return (
-    <form className={cn("flex flex-col gap-6", className)} {...props}>
+    <form
+      className={cn("flex flex-col gap-6", className)}
+      onSubmit={handleSubmit(handleFormSubmit)}
+      {...props}
+    >
       <FieldGroup>
         <div className="flex flex-col items-center gap-1 text-center">
           <h1 className="text-2xl font-bold">Login to your account</h1>
@@ -23,17 +56,19 @@ export function LoginForm({
             Enter your email below to login to your account
           </p>
         </div>
-        <Field>
+        <Field data-invalid={Boolean(errors.email)}>
           <FieldLabel htmlFor="email">Email</FieldLabel>
           <Input
             id="email"
             type="email"
             placeholder="m@example.com"
-            required
+            aria-invalid={Boolean(errors.email)}
+            {...register("email")}
             className="bg-background"
           />
+          <FieldError errors={[errors.email]} />
         </Field>
-        <Field>
+        <Field data-invalid={Boolean(errors.password)}>
           <div className="flex items-center">
             <FieldLabel htmlFor="password">Password</FieldLabel>
             <a
@@ -46,12 +81,16 @@ export function LoginForm({
           <Input
             id="password"
             type="password"
-            required
+            aria-invalid={Boolean(errors.password)}
+            {...register("password")}
             className="bg-background"
           />
+          <FieldError errors={[errors.password]} />
         </Field>
         <Field>
-          <Button type="submit">Login</Button>
+          <Button type="submit" disabled={isSubmitting || !isValid || !isDirty}>
+            {isSubmitting ? "Logging in..." : "Login"}
+          </Button>
         </Field>
         <FieldSeparator>Or continue with</FieldSeparator>
         <Field>
