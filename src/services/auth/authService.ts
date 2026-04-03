@@ -1,6 +1,12 @@
 import api from "@/lib/axios";
 import type {
   ApiResponse,
+<<<<<<< HEAD
+  LoginRequest,
+  LoginResponseData,
+  LogoutRequest,
+=======
+>>>>>>> development
   ResendOtpRequest,
   SignUpRequest,
   SignUpResponseData,
@@ -46,4 +52,23 @@ export const authService = {
 
     return response.data;
   },
+<<<<<<< HEAD
+
+  login: async (
+    payload: LoginRequest,
+  ): Promise<ApiResponse<LoginResponseData>> => {
+    const response = await api.post<ApiResponse<LoginResponseData>>(
+      "/v1/auth/login",
+      payload,
+      { withCredentials: true },
+    );
+
+    return response.data;
+  },
+
+  logout: async (payload: LogoutRequest): Promise<void> => {
+    await api.post("/v1/auth/logout", payload, { withCredentials: true });
+  },
+=======
+>>>>>>> development
 };
