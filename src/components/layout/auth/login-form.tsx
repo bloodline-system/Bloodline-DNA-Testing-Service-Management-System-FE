@@ -9,6 +9,7 @@ import {
   FieldSeparator,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+<<<<<<< HEAD
 import { Link, useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -24,6 +25,16 @@ const loginSchema = z.object({
   password: z
     .string()
     .min(8, "Password is required and more than 8 character."),
+=======
+import { Link } from "react-router";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
+const loginSchema = z.object({
+  email: z.email("Please enter a valid email address."),
+  password: z.string().min(1, "Password is required."),
+>>>>>>> development
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
@@ -33,10 +44,13 @@ type LoginFormProps = Omit<React.ComponentProps<"form">, "onSubmit"> & {
 };
 
 export function LoginForm({ className, onSubmit, ...props }: LoginFormProps) {
+<<<<<<< HEAD
   const loginMutation = useLoginMutation();
   const setSession = useAuthStore((state) => state.setSession);
   const navigate = useNavigate();
 
+=======
+>>>>>>> development
   const {
     register,
     handleSubmit,
@@ -45,12 +59,17 @@ export function LoginForm({ className, onSubmit, ...props }: LoginFormProps) {
     mode: "all",
     resolver: zodResolver(loginSchema),
     defaultValues: {
+<<<<<<< HEAD
       username: "",
+=======
+      email: "",
+>>>>>>> development
       password: "",
     },
   });
 
   const handleFormSubmit = async (values: LoginFormValues) => {
+<<<<<<< HEAD
     try {
       const data = await loginMutation.mutateAsync(values);
       setSession({
@@ -63,6 +82,9 @@ export function LoginForm({ className, onSubmit, ...props }: LoginFormProps) {
     } catch {
       // Errors are surfaced via mutation state and toast in the hook.
     }
+=======
+    await onSubmit?.(values);
+>>>>>>> development
   };
 
   return (
@@ -78,6 +100,7 @@ export function LoginForm({ className, onSubmit, ...props }: LoginFormProps) {
             Enter your username below to login to your account
           </p>
         </div>
+<<<<<<< HEAD
         <Field data-invalid={Boolean(errors.username)}>
           <FieldLabel htmlFor="username">Username</FieldLabel>
           <Input
@@ -87,6 +110,19 @@ export function LoginForm({ className, onSubmit, ...props }: LoginFormProps) {
             className="bg-background"
           />
           <FieldError errors={[errors.username]} />
+=======
+        <Field data-invalid={Boolean(errors.email)}>
+          <FieldLabel htmlFor="email">Email</FieldLabel>
+          <Input
+            id="email"
+            type="email"
+            placeholder="m@example.com"
+            aria-invalid={Boolean(errors.email)}
+            {...register("email")}
+            className="bg-background"
+          />
+          <FieldError errors={[errors.email]} />
+>>>>>>> development
         </Field>
         <Field data-invalid={Boolean(errors.password)}>
           <div className="flex items-center">
@@ -108,6 +144,7 @@ export function LoginForm({ className, onSubmit, ...props }: LoginFormProps) {
           <FieldError errors={[errors.password]} />
         </Field>
         <Field>
+<<<<<<< HEAD
           <Button
             type="submit"
             disabled={
@@ -123,6 +160,11 @@ export function LoginForm({ className, onSubmit, ...props }: LoginFormProps) {
               {getApiErrorMessage(loginMutation.error, "Unable to login.")}
             </FieldDescription>
           ) : null}
+=======
+          <Button type="submit" disabled={isSubmitting || !isValid || !isDirty}>
+            {isSubmitting ? "Logging in..." : "Login"}
+          </Button>
+>>>>>>> development
         </Field>
         <FieldSeparator>Or continue with</FieldSeparator>
         <Field>

@@ -26,7 +26,6 @@ export interface VerifyOtpRequest {
 export interface ResendOtpRequest {
   signUpId: string;
 }
-
 export interface LoginRequest {
   username: string;
   password: string;
