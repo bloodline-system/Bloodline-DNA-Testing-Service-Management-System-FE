@@ -26,3 +26,26 @@ export interface VerifyOtpRequest {
 export interface ResendOtpRequest {
   signUpId: string;
 }
+
+export interface LoginRequest {
+  username: string;
+  password: string;
+}
+
+export interface LoginResponseData {
+  access_token: string;
+  refresh_token: string;
+  expires_in: number;
+  user_id: string;
+}
+
+export interface LoginSessionData {
+  accessToken: string;
+  refreshToken: string;
+  expiresIn: number;
+  userId: string;
+}
+
+export interface LogoutRequest {
+  refreshToken: string;
+}

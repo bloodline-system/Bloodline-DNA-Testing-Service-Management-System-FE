@@ -9,14 +9,21 @@ import {
   FieldSeparator,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useLoginMutation } from "@/services/auth/auth.queries";
+import { useAuthStore } from "@/stores/auth/useAuthStore";
+import { getApiErrorMessage } from "@/lib/api-error";
 
 const loginSchema = z.object({
-  email: z.email("Please enter a valid email address."),
-  password: z.string().min(1, "Password is required."),
+  username: z
+    .string()
+    .min(3, "Username is required and more than 3 characters."),
+  password: z
+    .string()
+    .min(8, "Password is required and more than 8 character."),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
@@ -26,6 +33,10 @@ type LoginFormProps = Omit<React.ComponentProps<"form">, "onSubmit"> & {
 };
 
 export function LoginForm({ className, onSubmit, ...props }: LoginFormProps) {
+  const loginMutation = useLoginMutation();
+  const setSession = useAuthStore((state) => state.setSession);
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
@@ -34,13 +45,24 @@ export function LoginForm({ className, onSubmit, ...props }: LoginFormProps) {
     mode: "all",
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "",
+      username: "",
       password: "",
     },
   });
 
   const handleFormSubmit = async (values: LoginFormValues) => {
-    await onSubmit?.(values);
+    try {
+      const data = await loginMutation.mutateAsync(values);
+      setSession({
+        accessToken: data.accessToken,
+        refreshToken: data.refreshToken,
+        userId: data.userId,
+      });
+      await onSubmit?.(values);
+      navigate("/");
+    } catch {
+      // Errors are surfaced via mutation state and toast in the hook.
+    }
   };
 
   return (
@@ -53,20 +75,18 @@ export function LoginForm({ className, onSubmit, ...props }: LoginFormProps) {
         <div className="flex flex-col items-center gap-1 text-center">
           <h1 className="text-2xl font-bold">Login to your account</h1>
           <p className="text-sm text-balance text-muted-foreground">
-            Enter your email below to login to your account
+            Enter your username below to login to your account
           </p>
         </div>
-        <Field data-invalid={Boolean(errors.email)}>
-          <FieldLabel htmlFor="email">Email</FieldLabel>
+        <Field data-invalid={Boolean(errors.username)}>
+          <FieldLabel htmlFor="username">Username</FieldLabel>
           <Input
-            id="email"
-            type="email"
-            placeholder="m@example.com"
-            aria-invalid={Boolean(errors.email)}
-            {...register("email")}
+            id="username"
+            aria-invalid={Boolean(errors.username)}
+            {...register("username")}
             className="bg-background"
           />
-          <FieldError errors={[errors.email]} />
+          <FieldError errors={[errors.username]} />
         </Field>
         <Field data-invalid={Boolean(errors.password)}>
           <div className="flex items-center">
@@ -88,9 +108,21 @@ export function LoginForm({ className, onSubmit, ...props }: LoginFormProps) {
           <FieldError errors={[errors.password]} />
         </Field>
         <Field>
-          <Button type="submit" disabled={isSubmitting || !isValid || !isDirty}>
-            {isSubmitting ? "Logging in..." : "Login"}
+          <Button
+            type="submit"
+            disabled={
+              loginMutation.isPending || isSubmitting || !isValid || !isDirty
+            }
+          >
+            {loginMutation.isPending || isSubmitting
+              ? "Logging in..."
+              : "Login"}
           </Button>
+          {loginMutation.isError ? (
+            <FieldDescription className="text-destructive">
+              {getApiErrorMessage(loginMutation.error, "Unable to login.")}
+            </FieldDescription>
+          ) : null}
         </Field>
         <FieldSeparator>Or continue with</FieldSeparator>
         <Field>
