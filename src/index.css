@@ -9,11 +9,7 @@
   --card-foreground: oklch(0.3211 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.3211 0 0);
-<<<<<<< HEAD
   --primary: #2164f5;
-=======
-  --primary: #3b76f6;
->>>>>>> development
   --primary-foreground: oklch(1 0 0);
   --secondary: oklch(0.967 0.0029 264.5419);
   --secondary-foreground: oklch(0.4461 0.0263 256.8018);
@@ -194,7 +190,6 @@
   .bg-gradient-blue {
     background: var(--gradient-blue);
   }
-<<<<<<< HEAD
 
   .hide-scrollbar {
     -ms-overflow-style: none; /* Internet Explorer 10+ */
@@ -203,6 +198,4 @@
   .hide-scrollbar::-webkit-scrollbar {
     display: none; /* Safari and Chrome */
   }
-=======
->>>>>>> development
 }

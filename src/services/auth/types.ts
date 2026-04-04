@@ -45,6 +45,10 @@ export interface LoginSessionData {
   userId: string;
 }
 
+export interface RefreshTokenRequest {
+  refreshToken: string;
+}
+
 export interface LogoutRequest {
   refreshToken: string;
 }
