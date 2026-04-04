@@ -5,6 +5,7 @@ import { authService } from "@/services/auth/authService";
 import type {
   LoginSessionData,
   LoginRequest,
+  RefreshTokenRequest,
   ResendOtpRequest,
   SignUpRequest,
   VerifyOtpRequest,
@@ -74,6 +75,22 @@ export function useLoginMutation() {
     },
     onError: (error) => {
       toast.error(getApiErrorMessage(error, "Unable to login."));
+    },
+  });
+}
+
+export function useRefreshTokenMutation() {
+  return useMutation({
+    mutationFn: async (
+      payload: RefreshTokenRequest,
+    ): Promise<LoginSessionData> => {
+      const response = await authService.refreshToken(payload);
+      return {
+        accessToken: response.data.access_token,
+        refreshToken: response.data.refresh_token,
+        expiresIn: response.data.expires_in,
+        userId: response.data.user_id,
+      };
     },
   });
 }
