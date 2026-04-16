@@ -287,11 +287,13 @@ const Navbar = ({
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => navigate("/")}>
+                <DropdownMenuItem onClick={() => navigate("/profile")}>
                   <User />
                   Profile
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate("/")}>
+                <DropdownMenuItem
+                  onClick={() => navigate("/profile?tab=account")}
+                >
                   <Settings />
                   Settings
                 </DropdownMenuItem>
@@ -525,8 +527,8 @@ const getUserProfile = (
 };
 
 const getFullName = (
-  givenName?: string,
-  familyName?: string,
+  givenName?: string | null,
+  familyName?: string | null,
 ): string | null => {
   const fullName = [givenName, familyName].filter(Boolean).join(" ").trim();
   return fullName || null;

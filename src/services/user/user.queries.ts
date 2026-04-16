@@ -1,12 +1,22 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { getApiErrorMessage } from "@/lib/api-error";
 import { userService } from "./userService";
-import type { UserProfileResponse, ApiResponse } from "./types";
+import type {
+  ApiResponse,
+  ResponseObject,
+  UpdateUserProfileRequest,
+  UserProfileResponse,
+} from "./types";
 
 export const userQueryKeys = {
   me: ["user", "me"] as const,
+  profile: (username: string) => ["user", "profile", username] as const,
+};
+
+export const uploadQueryKeys = {
+  images: ["upload", "images"] as const,
 };
 
 export function useFetchMe(enabled = true) {
@@ -28,4 +38,96 @@ export function useFetchMe(enabled = true) {
   }, [query.error]);
 
   return query;
+}
+
+export function useFetchProfileByUsername(username: string | undefined, enabled = true) {
+  const query = useQuery<ApiResponse<UserProfileResponse>>({
+    queryKey: userQueryKeys.profile(username ?? ""),
+    queryFn: async () => {
+      if (!username) throw new Error("Username is required");
+      return await userService.getProfileByUsername(username);
+    },
+    enabled: enabled && Boolean(username),
+    retry: false,
+  });
+
+  useEffect(() => {
+    if (query.error) {
+      toast.error(getApiErrorMessage(query.error, "Fetch profile failed."));
+    }
+  }, [query.error]);
+
+  return query;
+}
+
+export function useUpdateProfileMutation(username: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (payload: UpdateUserProfileRequest | FormData) => {
+      return await userService.updateProfile(username, payload);
+    },
+    onSuccess: () => {
+      toast.success("Profile updated successfully.");
+      void queryClient.invalidateQueries({ queryKey: userQueryKeys.me });
+      void queryClient.invalidateQueries({
+        queryKey: userQueryKeys.profile(username),
+      });
+    },
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, "Unable to update profile."));
+    },
+  });
+}
+
+export function useDeleteProfileMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (username: string) => {
+      return await userService.deleteProfile(username);
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: userQueryKeys.me });
+    },
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, "Unable to delete account."));
+    },
+  });
+}
+
+export function useFetchAllImageUrls(enabled = true) {
+  const query = useQuery<ResponseObject<string[]>>({
+    queryKey: uploadQueryKeys.images,
+    queryFn: async () => {
+      return await userService.getAllImageUrls();
+    },
+    enabled,
+    retry: false,
+  });
+
+  useEffect(() => {
+    if (query.error) {
+      toast.error(getApiErrorMessage(query.error, "Fetch images failed."));
+    }
+  }, [query.error]);
+
+  return query;
+}
+
+export function useUploadImageMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (file: File) => {
+      return await userService.uploadImage(file);
+    },
+    onSuccess: (response) => {
+      toast.success(response.message || "Upload image successfully.");
+      void queryClient.invalidateQueries({ queryKey: uploadQueryKeys.images });
+    },
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, "Upload image failed."));
+    },
+  });
 }
