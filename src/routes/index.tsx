@@ -7,6 +7,7 @@ import ProfilePage from "@/pages/ProfilePage";
 import SignInPage from "@/pages/SignInPage";
 import SignUpPage from "@/pages/SignUpPage";
 import OrderPage from "@/pages/OrderPage";
+import PostManagementPage from "@/pages/PostManagementPage";
 import ReportPage from "@/pages/ReportPage";
 import { BrowserRouter, Routes, Route } from "react-router";
 
@@ -21,6 +22,7 @@ const AppRoutes = () => {
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/order" element={<OrderPage />} />
           <Route path="/report" element={<ReportPage />} />
+          <Route path="/manager/posts" element={<PostManagementPage />} />
         </Route>
 
         {/* Auth routes */}

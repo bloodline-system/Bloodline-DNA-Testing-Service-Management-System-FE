@@ -176,6 +176,7 @@ const Navbar = ({
   const { mutateAsync: logout, isPending: isLoggingOut } = useLogoutMutation();
 
   const userProfile = getUserProfile(profile, userId);
+  const isManagementUser = ["ADMIN", "MANAGER"].includes((profile?.role ?? "").toUpperCase());
 
   const isAuthenticated = Boolean(accessToken);
 
@@ -291,6 +292,12 @@ const Navbar = ({
                   <User />
                   Profile
                 </DropdownMenuItem>
+                {isManagementUser ? (
+                  <DropdownMenuItem onClick={() => navigate("/manager/posts") }>
+                    <Book />
+                    Manage posts
+                  </DropdownMenuItem>
+                ) : null}
                 <DropdownMenuItem
                   onClick={() => navigate("/profile?tab=account")}
                 >
@@ -404,6 +411,14 @@ const Navbar = ({
                       </Button>
                     </div>
                   )}
+                  {isAuthenticated && isManagementUser ? (
+                    <Button asChild variant="outline" className="w-full">
+                      <a href="/manager/posts">
+                        <Book className="mr-2 size-4" />
+                        Manage posts
+                      </a>
+                    </Button>
+                  ) : null}
                 </div>
               </SheetContent>
             </Sheet>

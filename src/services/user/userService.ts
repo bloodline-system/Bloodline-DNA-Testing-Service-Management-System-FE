@@ -1,6 +1,7 @@
 import api from "@/lib/axios";
 import type {
   ApiResponse,
+  ChangePasswordRequest,
   ResponseObject,
   UpdateUserProfileRequest,
   UserProfileResponse,
@@ -9,7 +10,7 @@ import type {
 export const userService = {
   getMyProfile: async (): Promise<ApiResponse<UserProfileResponse>> => {
     const response = await api.get<ApiResponse<UserProfileResponse>>(
-      "/v1/profiles/me",
+      "/v1/users/me",
       {
         withCredentials: true,
       },
@@ -32,11 +33,39 @@ export const userService = {
   },
 
   updateProfile: async (
-    username: string,
+    _username: string,
     payload: UpdateUserProfileRequest | FormData,
   ): Promise<ApiResponse<UserProfileResponse>> => {
     const response = await api.put<ApiResponse<UserProfileResponse>>(
-      `/v1/profiles/${encodeURIComponent(username)}`,
+      "/v1/users/me",
+      payload,
+      {
+        withCredentials: true,
+      },
+    );
+
+    return response.data;
+  },
+
+  updateMyProfile: async (
+    payload: UpdateUserProfileRequest,
+  ): Promise<ApiResponse<UserProfileResponse>> => {
+    const response = await api.put<ApiResponse<UserProfileResponse>>(
+      "/v1/users/me",
+      payload,
+      {
+        withCredentials: true,
+      },
+    );
+
+    return response.data;
+  },
+
+  changePassword: async (
+    payload: ChangePasswordRequest,
+  ): Promise<ApiResponse<void>> => {
+    const response = await api.post<ApiResponse<void>>(
+      "/v1/users/change-password",
       payload,
       {
         withCredentials: true,
