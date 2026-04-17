@@ -7,7 +7,12 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "codeceptjs run",
+    "test:auth": "codeceptjs run tests/auth/*.test.js",
+    "test:homepage": "codeceptjs run tests/homepage/*.test.js",
+    "test:debug": "codeceptjs run --debug",
+    "test:headless": "HEADLESS=true codeceptjs run"
   },
   "dependencies": {
     "@fontsource-variable/geist": "^5.2.8",
@@ -35,6 +40,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.29.0",
+    "@codeceptjs/configure": "^1.0.6",
     "@eslint/js": "^9.39.4",
     "@types/babel__core": "^7.20.5",
     "@types/node": "^24.12.0",
@@ -43,10 +49,12 @@
     "@vitejs/plugin-react": "^6.0.1",
     "autoprefixer": "^10.4.27",
     "babel-plugin-react-compiler": "^1.0.0",
+    "codeceptjs": "^3.7.8",
     "eslint": "^9.39.4",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.4.0",
+    "playwright": "^1.59.1",
     "postcss": "^8.5.8",
     "tailwindcss": "^4.2.2",
     "typescript": "~5.9.3",
