@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+
 import { About } from "@/components/layout/home/about";
 import Contact from "@/components/layout/home/contact-us";
 import { Faq } from "@/components/layout/home/faq";
@@ -53,7 +54,7 @@ const HomePage = () => {
                   alt: "Customer three",
                 },
                 {
-                  src: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=160&h=160&fit=crop",
+                  src: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=160&h=160&fit=crop",
                   alt: "Customer four",
                 },
                 {

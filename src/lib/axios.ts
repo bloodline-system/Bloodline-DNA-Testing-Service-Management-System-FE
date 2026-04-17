@@ -66,15 +66,11 @@ const requestTokenRefresh = () => {
         clearSession();
         throw new Error("Missing refresh token.");
       }
-
-      console.log("Attempting to refresh token");
       try {
         const response = await refreshClient.post<
           ApiResponse<LoginResponseData>
         >("/v1/auth/refresh-token", { refreshToken });
         const data = response.data.data;
-
-        console.log("Refresh response received");
         setSession({
           accessToken: data.access_token,
           refreshToken: data.refresh_token,
@@ -83,7 +79,6 @@ const requestTokenRefresh = () => {
 
         return data.access_token;
       } catch (error) {
-        console.log("Refresh request failed:", error);
         clearSession();
         throw error;
       }
@@ -99,7 +94,6 @@ api.interceptors.request.use(async (config) => {
   const accessToken = useAuthStore.getState().accessToken;
 
   if (!accessToken) {
-    console.log("No access token available");
     return config;
   }
 
@@ -107,16 +101,12 @@ api.interceptors.request.use(async (config) => {
   const expMs = getJwtExpMs(accessToken);
 
   if (expMs != null && expMs - Date.now() < REFRESH_SKEW_MS) {
-    console.log("Token expiring soon, refreshing...");
     tokenToUse = await requestTokenRefresh();
-    console.log("Token refreshed successfully");
   }
 
   config.headers = config.headers ?? {};
   (config.headers as Record<string, unknown>).Authorization =
     `Bearer ${tokenToUse}`;
-
-  console.log("Request with auth header:", config.url);
   return config;
 });
 
