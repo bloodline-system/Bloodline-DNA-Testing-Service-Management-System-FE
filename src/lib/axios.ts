@@ -2,13 +2,17 @@ import type { ApiResponse, LoginResponseData } from "@/services/auth/types";
 import { useAuthStore } from "@/stores/auth/useAuthStore";
 import axios, { AxiosError, type AxiosRequestConfig } from "axios";
 
+const BASE_URL = import.meta.env.PROD
+  ? import.meta.env.VITE_API_URL + "/api"
+  : "/api";
+
 const api = axios.create({
-  baseURL: "/api",
+  baseURL: BASE_URL,
   withCredentials: true,
 });
 
 const refreshClient = axios.create({
-  baseURL: "/api",
+  baseURL: BASE_URL,
   withCredentials: true,
 });
 
