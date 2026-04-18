@@ -20,11 +20,5 @@ export const useMetaTags = (config?: UseMetaTagsConfig) => {
     return () => {
       resetMetaTags();
     };
-  }, [
-    config?.title,
-    config?.description,
-    config?.image,
-    config?.url,
-    config?.type,
-  ]);
+  }, [config]);
 };

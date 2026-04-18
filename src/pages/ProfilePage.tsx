@@ -156,12 +156,16 @@ const ProfilePage = () => {
       phoneNumber: profile.phoneNumber ?? "",
       dateOfBirth: profile.dateOfBirth ?? "",
     });
-
-    setSelectedAvatarFile(null);
-    setAvatarPreviewUrl("");
   }, [profile, reset]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSelectedAvatarFile(null);
+    setAvatarPreviewUrl("");
+  }, [profile?.id]);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPasswordForm({
       currentPassword: "",
       newPassword: "",
@@ -173,6 +177,7 @@ const ProfilePage = () => {
     if (!selectedAvatarFile) return;
 
     const url = URL.createObjectURL(selectedAvatarFile);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setAvatarPreviewUrl(url);
 
     return () => {

@@ -1,5 +1,12 @@
 import axios from "@/lib/axios";
 
+export interface ApiResponse<T = unknown> {
+  code: number;
+  data: T;
+  message: string;
+  timestamp: string;
+}
+
 export interface Report {
   id: number;
   reportStatus: string;
@@ -12,7 +19,7 @@ export interface Report {
   filePath?: string;
   result?: string;
   notes?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface ReportsResponse {
@@ -32,7 +39,7 @@ export interface CreateReportPayload {
   testType?: string;
   result?: string;
   notes?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface UpdateReportStatusPayload {
@@ -64,23 +71,23 @@ class ReportService {
     });
 
     const response = await axios.get(`/api/v1/manager/reports?${params}`);
-    return response.data;
+    return response.data as ReportsResponse;
   }
 
   /**
    * Get single report by ID
    */
-  async getReportById(id: number): Promise<any> {
+  async getReportById(id: number): Promise<ApiResponse<Report>> {
     const response = await axios.get(`/api/v1/manager/reports/${id}`);
-    return response.data;
+    return response.data as ApiResponse<Report>;
   }
 
   /**
    * Create a new report
    */
-  async createReport(payload: CreateReportPayload): Promise<any> {
+  async createReport(payload: CreateReportPayload): Promise<ApiResponse<unknown>> {
     const response = await axios.post("/api/v1/manager/reports", payload);
-    return response.data;
+    return response.data as ApiResponse<unknown>;
   }
 
   /**
@@ -89,12 +96,12 @@ class ReportService {
   async updateReportStatus(
     id: number,
     payload: UpdateReportStatusPayload
-  ): Promise<any> {
+  ): Promise<ApiResponse<unknown>> {
     const response = await axios.put(
       `/api/v1/manager/reports/${id}/status`,
       payload
     );
-    return response.data;
+    return response.data as ApiResponse<unknown>;
   }
 
   /**
@@ -104,13 +111,13 @@ class ReportService {
     const response = await axios.get(`/api/v1/manager/reports/${id}/download`, {
       responseType: "blob",
     });
-    return response.data;
+    return response.data as Blob;
   }
 
   /**
    * Approve report
    */
-  async approveReport(id: number, reason?: string): Promise<any> {
+  async approveReport(id: number, reason?: string): Promise<ApiResponse<unknown>> {
     return this.updateReportStatus(id, {
       status: "APPROVED",
       reason,
@@ -120,7 +127,7 @@ class ReportService {
   /**
    * Reject report
    */
-  async rejectReport(id: number, reason?: string): Promise<any> {
+  async rejectReport(id: number, reason?: string): Promise<ApiResponse<unknown>> {
     return this.updateReportStatus(id, {
       status: "REJECTED",
       reason,
