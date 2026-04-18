@@ -4,7 +4,13 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
-import { CalendarDays, Mail, ShieldCheck, Sparkles, UserCircle2 } from "lucide-react";
+import {
+  CalendarDays,
+  Mail,
+  ShieldCheck,
+  Sparkles,
+  UserCircle2,
+} from "lucide-react";
 
 import LogoImage from "@/assets/toggle-logo.png";
 import { Navbar } from "@/components/layout/home/navbar";
@@ -44,7 +50,10 @@ import {
   useUpdateProfileMutation,
   useUploadImageMutation,
 } from "@/services/user/user.queries";
-import type { ChangePasswordRequest, UpdateUserProfileRequest } from "@/services/user/types";
+import type {
+  ChangePasswordRequest,
+  UpdateUserProfileRequest,
+} from "@/services/user/types";
 import { useAuthStore } from "@/stores/auth/useAuthStore";
 
 const PROFILE_MENU = [{ title: "Home", url: "/" }];
@@ -87,7 +96,11 @@ const personalSchema = z.object({
 type PersonalFormValues = z.infer<typeof personalSchema>;
 
 const getTabFromSearchParams = (tabParam: string | null): TabKey => {
-  if (tabParam === "personal" || tabParam === "account" || tabParam === "security") {
+  if (
+    tabParam === "personal" ||
+    tabParam === "account" ||
+    tabParam === "security"
+  ) {
     return tabParam;
   }
   return "personal";
@@ -121,7 +134,9 @@ const ProfilePage = () => {
   const uploadImageMutation = useUploadImageMutation();
   const deleteProfileMutation = useDeleteProfileMutation();
 
-  const [selectedAvatarFile, setSelectedAvatarFile] = useState<File | null>(null);
+  const [selectedAvatarFile, setSelectedAvatarFile] = useState<File | null>(
+    null,
+  );
   const [avatarPreviewUrl, setAvatarPreviewUrl] = useState<string>("");
   const [passwordForm, setPasswordForm] = useState<ChangePasswordRequest>({
     currentPassword: "",
@@ -162,7 +177,7 @@ const ProfilePage = () => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setSelectedAvatarFile(null);
     setAvatarPreviewUrl("");
-  }, [profile?.id]);
+  }, [profile?.userId]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -251,10 +266,16 @@ const ProfilePage = () => {
     navigate("/sign-in");
   };
 
-  const handlePasswordChange = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handlePasswordChange = async (
+    event: React.FormEvent<HTMLFormElement>,
+  ) => {
     event.preventDefault();
 
-    if (!passwordForm.currentPassword || !passwordForm.newPassword || !passwordForm.confirmPassword) {
+    if (
+      !passwordForm.currentPassword ||
+      !passwordForm.newPassword ||
+      !passwordForm.confirmPassword
+    ) {
       toast.error("Please fill in all password fields.");
       return;
     }
@@ -306,7 +327,8 @@ const ProfilePage = () => {
                     Shape your profile and security in one place.
                   </h1>
                   <p className="max-w-2xl text-sm leading-6 text-slate-600 md:text-base">
-                    Keep your identity details, avatar, and password aligned without jumping between screens.
+                    Keep your identity details, avatar, and password aligned
+                    without jumping between screens.
                   </p>
                 </div>
 
@@ -317,14 +339,18 @@ const ProfilePage = () => {
                         <UserCircle2 className="size-4" />
                         Username
                       </div>
-                      <div className="mt-2 text-sm font-semibold text-slate-950">{profile.username}</div>
+                      <div className="mt-2 text-sm font-semibold text-slate-950">
+                        {profile.username}
+                      </div>
                     </div>
                     <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
                       <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-slate-500">
                         <ShieldCheck className="size-4" />
                         Role
                       </div>
-                      <div className="mt-2 text-sm font-semibold text-slate-950">{profile.role}</div>
+                      <div className="mt-2 text-sm font-semibold text-slate-950">
+                        {profile.role}
+                      </div>
                     </div>
                     <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
                       <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-slate-500">
@@ -332,7 +358,11 @@ const ProfilePage = () => {
                         Status
                       </div>
                       <div className="mt-2 text-sm font-semibold text-slate-950">
-                        {typeof profile.isActive === "boolean" ? (profile.isActive ? "Active" : "Inactive") : "Member"}
+                        {typeof profile.isActive === "boolean"
+                          ? profile.isActive
+                            ? "Active"
+                            : "Inactive"
+                          : "Member"}
                       </div>
                     </div>
                   </div>
@@ -349,7 +379,9 @@ const ProfilePage = () => {
                       </AvatarFallback>
                     </Avatar>
                     <div className="min-w-0 flex-1">
-                      <div className="text-sm font-medium text-slate-500">Signed in as</div>
+                      <div className="text-sm font-medium text-slate-500">
+                        Signed in as
+                      </div>
                       <div className="truncate text-xl font-semibold text-slate-950">
                         {profile.firstName || profile.lastName
                           ? `${profile.firstName ?? ""} ${profile.lastName ?? ""}`.trim()
@@ -376,7 +408,9 @@ const ProfilePage = () => {
 
           {meQuery.isLoading ? (
             <Card className="border-slate-200/80 bg-white/90 shadow-lg shadow-slate-200/60 backdrop-blur">
-              <CardContent className="py-10 text-center text-slate-600">Loading your profile...</CardContent>
+              <CardContent className="py-10 text-center text-slate-600">
+                Loading your profile...
+              </CardContent>
             </Card>
           ) : meQuery.isError ? (
             <Card className="border-slate-200/80 bg-white/90 shadow-lg shadow-slate-200/60 backdrop-blur">
@@ -386,7 +420,9 @@ const ProfilePage = () => {
             </Card>
           ) : !profile ? (
             <Card className="border-slate-200/80 bg-white/90 shadow-lg shadow-slate-200/60 backdrop-blur">
-              <CardContent className="py-10 text-center text-slate-600">No profile data.</CardContent>
+              <CardContent className="py-10 text-center text-slate-600">
+                No profile data.
+              </CardContent>
             </Card>
           ) : (
             <div className="grid gap-6 lg:grid-cols-[240px_minmax(0,1fr)]">
@@ -420,13 +456,21 @@ const ProfilePage = () => {
                             <Avatar className="size-16 ring-4 ring-white shadow-lg shadow-slate-200/60">
                               <AvatarImage alt="Avatar" src={avatarUrl} />
                               <AvatarFallback className="text-lg font-semibold">
-                                {(profile.username || "U").slice(0, 1).toUpperCase()}
+                                {(profile.username || "U")
+                                  .slice(0, 1)
+                                  .toUpperCase()}
                               </AvatarFallback>
                             </Avatar>
                             <div className="min-w-0">
-                              <div className="text-sm font-medium text-slate-500">Current profile</div>
-                              <div className="truncate text-lg font-semibold text-slate-950">{profile.username}</div>
-                              <div className="truncate text-sm text-slate-600">{profile.email}</div>
+                              <div className="text-sm font-medium text-slate-500">
+                                Current profile
+                              </div>
+                              <div className="truncate text-lg font-semibold text-slate-950">
+                                {profile.username}
+                              </div>
+                              <div className="truncate text-sm text-slate-600">
+                                {profile.email}
+                              </div>
                             </div>
                           </div>
 
@@ -444,7 +488,10 @@ const ProfilePage = () => {
 
                           <div className="mt-5 overflow-hidden rounded-[20px] border border-slate-200 bg-white shadow-sm">
                             <img
-                              src={avatarUrl || "https://placehold.co/600x400/e2e8f0/334155?text=Profile+preview"}
+                              src={
+                                avatarUrl ||
+                                "https://placehold.co/600x400/e2e8f0/334155?text=Profile+preview"
+                              }
                               alt="Avatar preview"
                               className="h-56 w-full object-cover"
                             />
@@ -458,32 +505,63 @@ const ProfilePage = () => {
                           <FieldGroup>
                             <GridFields columns={2} className="gap-4">
                               <Field data-invalid={Boolean(errors.firstName)}>
-                                <FieldLabel htmlFor="firstName">First name</FieldLabel>
-                                <Input id="firstName" className="bg-white" {...register("firstName")} />
+                                <FieldLabel htmlFor="firstName">
+                                  First name
+                                </FieldLabel>
+                                <Input
+                                  id="firstName"
+                                  className="bg-white"
+                                  {...register("firstName")}
+                                />
                                 <FieldError errors={[errors.firstName]} />
                               </Field>
 
                               <Field data-invalid={Boolean(errors.lastName)}>
-                                <FieldLabel htmlFor="lastName">Last name</FieldLabel>
-                                <Input id="lastName" className="bg-white" {...register("lastName")} />
+                                <FieldLabel htmlFor="lastName">
+                                  Last name
+                                </FieldLabel>
+                                <Input
+                                  id="lastName"
+                                  className="bg-white"
+                                  {...register("lastName")}
+                                />
                                 <FieldError errors={[errors.lastName]} />
                               </Field>
 
                               <Field data-invalid={Boolean(errors.email)}>
                                 <FieldLabel htmlFor="email">Email</FieldLabel>
-                                <Input id="email" type="email" className="bg-white" aria-invalid={Boolean(errors.email)} {...register("email")} />
+                                <Input
+                                  id="email"
+                                  type="email"
+                                  className="bg-white"
+                                  aria-invalid={Boolean(errors.email)}
+                                  {...register("email")}
+                                />
                                 <FieldError errors={[errors.email]} />
                               </Field>
 
                               <Field data-invalid={Boolean(errors.phoneNumber)}>
-                                <FieldLabel htmlFor="phoneNumber">Phone number</FieldLabel>
-                                <Input id="phoneNumber" className="bg-white" {...register("phoneNumber")} />
+                                <FieldLabel htmlFor="phoneNumber">
+                                  Phone number
+                                </FieldLabel>
+                                <Input
+                                  id="phoneNumber"
+                                  className="bg-white"
+                                  {...register("phoneNumber")}
+                                />
                                 <FieldError errors={[errors.phoneNumber]} />
                               </Field>
 
                               <Field data-invalid={Boolean(errors.dateOfBirth)}>
-                                <FieldLabel htmlFor="dateOfBirth">Date of birth</FieldLabel>
-                                <Input id="dateOfBirth" type="date" className="bg-white" {...register("dateOfBirth")} />
+                                <FieldLabel htmlFor="dateOfBirth">
+                                  Date of birth
+                                </FieldLabel>
+                                <Input
+                                  id="dateOfBirth"
+                                  type="date"
+                                  className="bg-white"
+                                  {...register("dateOfBirth")}
+                                />
                                 <FieldError errors={[errors.dateOfBirth]} />
                               </Field>
                             </GridFields>
@@ -499,7 +577,9 @@ const ProfilePage = () => {
                                 }
                                 className="w-full md:w-auto"
                               >
-                                {updateProfileMutation.isPending || isSubmitting ? "Saving..." : "Save changes"}
+                                {updateProfileMutation.isPending || isSubmitting
+                                  ? "Saving..."
+                                  : "Save changes"}
                               </Button>
                               <InlineDescription className="mt-2">
                                 Your changes will be saved to your account.
@@ -525,16 +605,22 @@ const ProfilePage = () => {
                         <div className="grid gap-3 text-sm">
                           <div className="flex items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
                             <span className="text-slate-500">Username</span>
-                            <span className="font-semibold text-slate-950">{profile.username}</span>
+                            <span className="font-semibold text-slate-950">
+                              {profile.username}
+                            </span>
                           </div>
                           <div className="flex items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
                             <span className="text-slate-500">Role</span>
-                            <span className="font-semibold text-slate-950">{profile.role}</span>
+                            <span className="font-semibold text-slate-950">
+                              {profile.role}
+                            </span>
                           </div>
                           {profile.createdAt ? (
                             <div className="flex items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
                               <span className="text-slate-500">Created at</span>
-                              <span className="font-semibold text-slate-950">{profile.createdAt}</span>
+                              <span className="font-semibold text-slate-950">
+                                {profile.createdAt}
+                              </span>
                             </div>
                           ) : null}
                           {typeof profile.isActive === "boolean" ? (
@@ -551,7 +637,9 @@ const ProfilePage = () => {
 
                     <Card className="border-rose-200/80 bg-rose-50/70 shadow-xl shadow-rose-100/60 backdrop-blur">
                       <CardHeader>
-                        <CardTitle className="text-rose-950">Danger zone</CardTitle>
+                        <CardTitle className="text-rose-950">
+                          Danger zone
+                        </CardTitle>
                         <CardDescription className="text-rose-700/80">
                           Deleting your account requires admin approval.
                         </CardDescription>
@@ -562,7 +650,9 @@ const ProfilePage = () => {
                         </p>
                         <Dialog>
                           <DialogTrigger asChild>
-                            <Button variant="destructive">Delete account</Button>
+                            <Button variant="destructive">
+                              Delete account
+                            </Button>
                           </DialogTrigger>
                           <DialogContent>
                             <DialogHeader>
@@ -583,7 +673,9 @@ const ProfilePage = () => {
                                 onClick={() => void handleDeleteAccount()}
                                 disabled={deleteProfileMutation.isPending}
                               >
-                                {deleteProfileMutation.isPending ? "Deleting..." : "Confirm delete"}
+                                {deleteProfileMutation.isPending
+                                  ? "Deleting..."
+                                  : "Confirm delete"}
                               </Button>
                             </DialogFooter>
                           </DialogContent>
@@ -608,8 +700,12 @@ const ProfilePage = () => {
                             <ShieldCheck className="size-5" />
                           </div>
                           <div>
-                            <div className="text-sm font-medium text-slate-500">Security controls</div>
-                            <div className="text-lg font-semibold text-slate-950">Password change</div>
+                            <div className="text-sm font-medium text-slate-500">
+                              Security controls
+                            </div>
+                            <div className="text-lg font-semibold text-slate-950">
+                              Password change
+                            </div>
                           </div>
                         </div>
                         <div className="mt-5 space-y-3 text-sm text-slate-600">
@@ -622,9 +718,14 @@ const ProfilePage = () => {
                         </div>
                       </div>
 
-                      <form className="grid gap-4" onSubmit={handlePasswordChange}>
+                      <form
+                        className="grid gap-4"
+                        onSubmit={handlePasswordChange}
+                      >
                         <Field>
-                          <FieldLabel htmlFor="currentPassword">Current password</FieldLabel>
+                          <FieldLabel htmlFor="currentPassword">
+                            Current password
+                          </FieldLabel>
                           <Input
                             id="currentPassword"
                             type="password"
@@ -640,7 +741,9 @@ const ProfilePage = () => {
                           />
                         </Field>
                         <Field>
-                          <FieldLabel htmlFor="newPassword">New password</FieldLabel>
+                          <FieldLabel htmlFor="newPassword">
+                            New password
+                          </FieldLabel>
                           <Input
                             id="newPassword"
                             type="password"
@@ -656,7 +759,9 @@ const ProfilePage = () => {
                           />
                         </Field>
                         <Field>
-                          <FieldLabel htmlFor="confirmPassword">Confirm new password</FieldLabel>
+                          <FieldLabel htmlFor="confirmPassword">
+                            Confirm new password
+                          </FieldLabel>
                           <Input
                             id="confirmPassword"
                             type="password"
@@ -671,8 +776,13 @@ const ProfilePage = () => {
                             className="bg-white"
                           />
                         </Field>
-                        <Button type="submit" disabled={changePasswordMutation.isPending}>
-                          {changePasswordMutation.isPending ? "Updating..." : "Update password"}
+                        <Button
+                          type="submit"
+                          disabled={changePasswordMutation.isPending}
+                        >
+                          {changePasswordMutation.isPending
+                            ? "Updating..."
+                            : "Update password"}
                         </Button>
                       </form>
                     </CardContent>
