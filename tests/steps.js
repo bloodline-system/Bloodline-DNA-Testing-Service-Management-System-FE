@@ -40,14 +40,32 @@ export const steps = {
 
     // Submit form
     I.see("Create Account");
-    I.click("button");
+    const signUpResponse = await I.usePlaywrightTo(
+      "submit signup and capture sign-up response",
+      async ({ page }) => {
+        const responsePromise = page.waitForResponse(
+          (response) =>
+            response.url().includes("/api/v1/auth/sign-up") &&
+            response.request().method() === "POST",
+        );
+        await page.getByRole("button", { name: "Create Account" }).click();
+        const response = await responsePromise;
+        const body = await response.text();
+        return { status: response.status(), body };
+      },
+    );
+
+    if (signUpResponse.status !== 200) {
+      throw new Error(
+        `Sign-up failed with status ${signUpResponse.status}: ${signUpResponse.body}`,
+      );
+    }
 
     // Handle OTP verification
-    I.waitForElement('[role="dialog"][data-state="open"]', 10);
     I.see("Verify your login");
     I.see("Enter the verification code");
+    I.waitForText("Verify your login", 10);
     I.seeElement('[data-slot="input-otp"]');
-    I.wait(3);
 
     // Retrieve OTP from debug endpoint
     const response = await I.sendGetRequest(
@@ -72,26 +90,19 @@ export const steps = {
     );
 
     // Submit OTP verification
-    I.waitForEnabled('[role="dialog"] button[type="submit"]', 10);
-    I.click('[role="dialog"] button[type="submit"]');
+    I.waitForEnabled(locate("button").withText("Verify"), 10);
+    I.click("Verify");
 
     // Redirect to sign-in
     I.waitInUrl("/sign-in", 10);
     I.see("Login to your account");
 
     // Login with newly created credentials
-    I.fillField("input:nth-of-type(1)", username);
-    I.fillField('input[type="password"]', password);
-    I.seeElement("button");
-    I.see("Login");
-    I.click("button");
-
-    // Verify login button is ready to submit
-    I.seeElement("button");
-    I.see("Login");
-
-    // Click login button to submit form
-    I.click("button");
+    I.fillField("#username", username);
+    I.fillField("#password", password);
+    I.seeElement(locate("button").withText("Login"));
+    I.waitForEnabled(locate("button").withText("Login"), 10);
+    I.click("Login");
 
     I.waitInUrl("/", 5);
   },
