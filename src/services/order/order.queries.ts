@@ -1,5 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import orderService, { type OrdersResponse, type NewOrdersResponse } from "./orderService";
+import orderService, {
+  type OrdersResponse,
+  type NewOrdersResponse,
+} from "./orderService";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
 
@@ -41,7 +44,8 @@ export const useNewOrdersQuery = () => {
 export const useOrderDetailQuery = (id: number | null) => {
   return useQuery({
     queryKey: id ? orderKeys.detail(id) : ["order-detail-disabled"],
-    queryFn: () => (id ? orderService.getOrderById(id) : Promise.reject("No ID")),
+    queryFn: () =>
+      id ? orderService.getOrderById(id) : Promise.reject("No ID"),
     enabled: !!id,
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
@@ -62,7 +66,9 @@ export const useAssignCollectionStaffMutation = () => {
       queryClient.invalidateQueries({ queryKey: orderKeys.detail(orderId) });
     },
     onError: (error: AxiosError) => {
-      const message = (error?.response?.data as Record<string, unknown>)?.message || "Failed to assign collection staff";
+      const message =
+        (error?.response?.data as Record<string, unknown>)?.message ||
+        "Failed to assign collection staff";
       toast.error(message as string);
     },
   });
@@ -83,7 +89,9 @@ export const useAssignAnalysisStaffMutation = () => {
       queryClient.invalidateQueries({ queryKey: orderKeys.detail(orderId) });
     },
     onError: (error: AxiosError) => {
-      const message = (error?.response?.data as Record<string, unknown>)?.message || "Failed to assign analysis staff";
+      const message =
+        (error?.response?.data as Record<string, unknown>)?.message ||
+        "Failed to assign analysis staff";
       toast.error(message as string);
     },
   });
@@ -104,7 +112,9 @@ export const useUpdateOrderStatusMutation = () => {
       queryClient.invalidateQueries({ queryKey: orderKeys.detail(orderId) });
     },
     onError: (error: AxiosError) => {
-      const message = (error?.response?.data as Record<string, unknown>)?.message || "Failed to update order status";
+      const message =
+        (error?.response?.data as Record<string, unknown>)?.message ||
+        "Failed to update order status";
       toast.error(message as string);
     },
   });

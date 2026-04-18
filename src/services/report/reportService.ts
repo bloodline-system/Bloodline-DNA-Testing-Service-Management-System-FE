@@ -58,7 +58,7 @@ class ReportService {
     generatedByRole: string = "all",
     search: string = "",
     sortBy: string = "createdAt",
-    sortDir: "asc" | "desc" = "desc"
+    sortDir: "asc" | "desc" = "desc",
   ): Promise<ReportsResponse> {
     const params = new URLSearchParams({
       page: page.toString(),
@@ -85,7 +85,9 @@ class ReportService {
   /**
    * Create a new report
    */
-  async createReport(payload: CreateReportPayload): Promise<ApiResponse<unknown>> {
+  async createReport(
+    payload: CreateReportPayload,
+  ): Promise<ApiResponse<unknown>> {
     const response = await axios.post("/api/v1/manager/reports", payload);
     return response.data as ApiResponse<unknown>;
   }
@@ -95,11 +97,11 @@ class ReportService {
    */
   async updateReportStatus(
     id: number,
-    payload: UpdateReportStatusPayload
+    payload: UpdateReportStatusPayload,
   ): Promise<ApiResponse<unknown>> {
     const response = await axios.put(
       `/api/v1/manager/reports/${id}/status`,
-      payload
+      payload,
     );
     return response.data as ApiResponse<unknown>;
   }
@@ -117,7 +119,10 @@ class ReportService {
   /**
    * Approve report
    */
-  async approveReport(id: number, reason?: string): Promise<ApiResponse<unknown>> {
+  async approveReport(
+    id: number,
+    reason?: string,
+  ): Promise<ApiResponse<unknown>> {
     return this.updateReportStatus(id, {
       status: "APPROVED",
       reason,
@@ -127,7 +132,10 @@ class ReportService {
   /**
    * Reject report
    */
-  async rejectReport(id: number, reason?: string): Promise<ApiResponse<unknown>> {
+  async rejectReport(
+    id: number,
+    reason?: string,
+  ): Promise<ApiResponse<unknown>> {
     return this.updateReportStatus(id, {
       status: "REJECTED",
       reason,
