@@ -73,11 +73,11 @@ class OrderService {
    */
   async assignCollectionStaff(
     orderId: number,
-    staffId: number
+    staffId: number,
   ): Promise<ApiResponse<unknown>> {
     const response = await axios.post(
       `/api/v1/manager/orders/${orderId}/assign-collection-staff`,
-      { staffId }
+      { staffId },
     );
     return response.data as ApiResponse<unknown>;
   }
@@ -87,11 +87,11 @@ class OrderService {
    */
   async assignAnalysisStaff(
     orderId: number,
-    staffId: number
+    staffId: number,
   ): Promise<ApiResponse<unknown>> {
     const response = await axios.post(
       `/api/v1/manager/orders/${orderId}/assign-analysis-staff`,
-      { staffId }
+      { staffId },
     );
     return response.data as ApiResponse<unknown>;
   }
@@ -101,11 +101,11 @@ class OrderService {
    */
   async updateOrderStatus(
     orderId: number,
-    status: string
+    status: string,
   ): Promise<ApiResponse<unknown>> {
     const response = await axios.put(
       `/api/v1/manager/orders/${orderId}/status`,
-      { status }
+      { status },
     );
     return response.data as ApiResponse<unknown>;
   }

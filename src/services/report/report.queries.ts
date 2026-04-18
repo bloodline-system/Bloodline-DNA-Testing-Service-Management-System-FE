@@ -1,5 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import reportService, { type ReportsResponse, type CreateReportPayload, type UpdateReportStatusPayload } from "./reportService";
+import reportService, {
+  type ReportsResponse,
+  type CreateReportPayload,
+  type UpdateReportStatusPayload,
+} from "./reportService";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
 
@@ -22,12 +26,28 @@ export const useReportsQuery = (
   generatedByRole: string = "all",
   search: string = "",
   sortBy: string = "createdAt",
-  sortDir: "asc" | "desc" = "desc"
+  sortDir: "asc" | "desc" = "desc",
 ) => {
   return useQuery<ReportsResponse>({
-    queryKey: reportKeys.list({ page, size, status, generatedByRole, search, sortBy, sortDir }),
+    queryKey: reportKeys.list({
+      page,
+      size,
+      status,
+      generatedByRole,
+      search,
+      sortBy,
+      sortDir,
+    }),
     queryFn: () =>
-      reportService.getAllReports(page, size, status, generatedByRole, search, sortBy, sortDir),
+      reportService.getAllReports(
+        page,
+        size,
+        status,
+        generatedByRole,
+        search,
+        sortBy,
+        sortDir,
+      ),
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 };
@@ -38,7 +58,8 @@ export const useReportsQuery = (
 export const useReportDetailQuery = (id: number | null) => {
   return useQuery({
     queryKey: id ? reportKeys.detail(id) : ["report-detail-disabled"],
-    queryFn: () => (id ? reportService.getReportById(id) : Promise.reject("No ID")),
+    queryFn: () =>
+      id ? reportService.getReportById(id) : Promise.reject("No ID"),
     enabled: !!id,
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
@@ -51,13 +72,16 @@ export const useCreateReportMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (payload: CreateReportPayload) => reportService.createReport(payload),
+    mutationFn: (payload: CreateReportPayload) =>
+      reportService.createReport(payload),
     onSuccess: () => {
       toast.success("Report created successfully");
       queryClient.invalidateQueries({ queryKey: reportKeys.all });
     },
     onError: (error: AxiosError) => {
-      const message = (error?.response?.data as Record<string, unknown>)?.message || "Failed to create report";
+      const message =
+        (error?.response?.data as Record<string, unknown>)?.message ||
+        "Failed to create report";
       toast.error(message as string);
     },
   });
@@ -70,15 +94,22 @@ export const useUpdateReportStatusMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, payload }: { id: number; payload: UpdateReportStatusPayload }) =>
-      reportService.updateReportStatus(id, payload),
+    mutationFn: ({
+      id,
+      payload,
+    }: {
+      id: number;
+      payload: UpdateReportStatusPayload;
+    }) => reportService.updateReportStatus(id, payload),
     onSuccess: (_data, { id }) => {
       toast.success("Report status updated successfully");
       queryClient.invalidateQueries({ queryKey: reportKeys.all });
       queryClient.invalidateQueries({ queryKey: reportKeys.detail(id) });
     },
     onError: (error: AxiosError) => {
-      const message = (error?.response?.data as Record<string, unknown>)?.message || "Failed to update report status";
+      const message =
+        (error?.response?.data as Record<string, unknown>)?.message ||
+        "Failed to update report status";
       toast.error(message as string);
     },
   });
@@ -98,7 +129,9 @@ export const useApproveReportMutation = () => {
       queryClient.invalidateQueries({ queryKey: reportKeys.detail(id) });
     },
     onError: (error: AxiosError) => {
-      const message = (error?.response?.data as Record<string, unknown>)?.message || "Failed to approve report";
+      const message =
+        (error?.response?.data as Record<string, unknown>)?.message ||
+        "Failed to approve report";
       toast.error(message as string);
     },
   });
@@ -118,7 +151,9 @@ export const useRejectReportMutation = () => {
       queryClient.invalidateQueries({ queryKey: reportKeys.detail(id) });
     },
     onError: (error: AxiosError) => {
-      const message = (error?.response?.data as Record<string, unknown>)?.message || "Failed to reject report";
+      const message =
+        (error?.response?.data as Record<string, unknown>)?.message ||
+        "Failed to reject report";
       toast.error(message as string);
     },
   });
@@ -141,7 +176,9 @@ export const useDownloadReportMutation = () => {
       toast.success("Report downloaded successfully");
     },
     onError: (error: AxiosError) => {
-      const message = (error?.response?.data as Record<string, unknown>)?.message || "Failed to download report";
+      const message =
+        (error?.response?.data as Record<string, unknown>)?.message ||
+        "Failed to download report";
       toast.error(message as string);
     },
   });
