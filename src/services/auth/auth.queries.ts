@@ -3,9 +3,13 @@ import { toast } from "sonner";
 import { getApiErrorMessage } from "@/lib/api-error";
 import { authService } from "@/services/auth/authService";
 import type {
+  LoginSessionData,
+  LoginRequest,
+  RefreshTokenRequest,
   ResendOtpRequest,
   SignUpRequest,
   VerifyOtpRequest,
+  LogoutRequest,
 } from "./types";
 
 export function useSignUpMutation() {
@@ -51,6 +55,56 @@ export function useResendOtpMutation() {
     },
     onError: (error) => {
       toast.error(getApiErrorMessage(error, "Unable to resend OTP."));
+    },
+  });
+}
+
+export function useLoginMutation() {
+  return useMutation({
+    mutationFn: async (payload: LoginRequest): Promise<LoginSessionData> => {
+      const response = await authService.login(payload);
+      return {
+        accessToken: response.data.access_token,
+        refreshToken: response.data.refresh_token,
+        expiresIn: response.data.expires_in,
+        userId: response.data.user_id,
+      };
+    },
+    onSuccess: () => {
+      toast.success("Login successfully! Welcome!");
+    },
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, "Unable to login."));
+    },
+  });
+}
+
+export function useRefreshTokenMutation() {
+  return useMutation({
+    mutationFn: async (
+      payload: RefreshTokenRequest,
+    ): Promise<LoginSessionData> => {
+      const response = await authService.refreshToken(payload);
+      return {
+        accessToken: response.data.access_token,
+        refreshToken: response.data.refresh_token,
+        expiresIn: response.data.expires_in,
+        userId: response.data.user_id,
+      };
+    },
+  });
+}
+
+export function useLogoutMutation() {
+  return useMutation({
+    mutationFn: async (payload: LogoutRequest): Promise<void> => {
+      await authService.logout(payload);
+    },
+    onSuccess: () => {
+      toast.success("Logout successfully!");
+    },
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, "Unable to logout."));
     },
   });
 }
