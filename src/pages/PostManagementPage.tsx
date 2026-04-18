@@ -13,7 +13,13 @@ import {
 import LogoImage from "@/assets/toggle-logo.png";
 import { Navbar } from "@/components/layout/home/navbar";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -140,12 +146,16 @@ const PostManagementPage = () => {
     }
   };
 
-  const handleImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const file = event.target.files?.[0];
 
     if (!file) {
       setSelectedImageFile(null);
-      setImagePreviewUrl(selectedPostId != null ? editor.featuredImageUrl ?? "" : "");
+      setImagePreviewUrl(
+        selectedPostId != null ? (editor.featuredImageUrl ?? "") : "",
+      );
       return;
     }
 
@@ -157,7 +167,9 @@ const PostManagementPage = () => {
     await uploadSelectedImage(file, previewUrl);
   };
 
-  const handleEditorSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleEditorSubmit = async (
+    event: React.FormEvent<HTMLFormElement>,
+  ) => {
     event.preventDefault();
 
     const payload: ContentPostRequest = {
@@ -174,7 +186,10 @@ const PostManagementPage = () => {
     }
 
     if (selectedPostId != null) {
-      await updatePostMutation.mutateAsync({ postId: selectedPostId, data: payload });
+      await updatePostMutation.mutateAsync({
+        postId: selectedPostId,
+        data: payload,
+      });
     } else {
       await createPostMutation.mutateAsync(payload);
     }
@@ -196,8 +211,14 @@ const PostManagementPage = () => {
     setImagePreviewUrl(post.featuredImageUrl ?? "");
   };
 
-  const handlePublish = async (post: ContentPostResponse, nextStatus: PostStatus) => {
-    await updateStatusMutation.mutateAsync({ postId: post.postId, status: nextStatus });
+  const handlePublish = async (
+    post: ContentPostResponse,
+    nextStatus: PostStatus,
+  ) => {
+    await updateStatusMutation.mutateAsync({
+      postId: post.postId,
+      status: nextStatus,
+    });
   };
 
   const handleDelete = async (post: ContentPostResponse) => {
@@ -212,7 +233,9 @@ const PostManagementPage = () => {
       const tags = current.tags ?? [];
       return {
         ...current,
-        tags: tags.includes(tag) ? tags.filter((currentTag) => currentTag !== tag) : [...tags, tag],
+        tags: tags.includes(tag)
+          ? tags.filter((currentTag) => currentTag !== tag)
+          : [...tags, tag],
       };
     });
   };
@@ -248,22 +271,31 @@ const PostManagementPage = () => {
                   Build and manage posts with a cleaner editor.
                 </h1>
                 <p className="max-w-2xl text-sm leading-6 text-slate-600 md:text-base">
-                  Search titles, organize categories, upload featured images, and publish content from one place.
+                  Search titles, organize categories, upload featured images,
+                  and publish content from one place.
                 </p>
               </div>
               <div className="grid gap-3 sm:grid-cols-3">
                 <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                  <div className="text-xs font-medium uppercase tracking-wide text-slate-500">Total posts</div>
-                  <div className="mt-2 text-2xl font-semibold text-slate-950">{stats.total}</div>
+                  <div className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                    Total posts
+                  </div>
+                  <div className="mt-2 text-2xl font-semibold text-slate-950">
+                    {stats.total}
+                  </div>
                 </div>
                 <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                  <div className="text-xs font-medium uppercase tracking-wide text-slate-500">Current page</div>
+                  <div className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                    Current page
+                  </div>
                   <div className="mt-2 text-2xl font-semibold text-slate-950">
                     {stats.page} / {Math.max(stats.totalPages, 1)}
                   </div>
                 </div>
                 <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                  <div className="text-xs font-medium uppercase tracking-wide text-slate-500">Mode</div>
+                  <div className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                    Mode
+                  </div>
                   <div className="mt-2 text-2xl font-semibold text-slate-950">
                     {selectedPostId ? "Update" : "Create"}
                   </div>
@@ -277,15 +309,20 @@ const PostManagementPage = () => {
                   <ImageIcon className="size-5" />
                 </div>
                 <div>
-                  <div className="text-sm font-medium text-slate-500">Editor snapshot</div>
+                  <div className="text-sm font-medium text-slate-500">
+                    Editor snapshot
+                  </div>
                   <div className="text-lg font-semibold text-slate-950">
-                    {selectedPostId ? "Editing existing post" : "Drafting new post"}
+                    {selectedPostId
+                      ? "Editing existing post"
+                      : "Drafting new post"}
                   </div>
                 </div>
               </div>
               <div className="mt-5 grid gap-3 text-sm text-slate-600">
                 <div className="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3">
-                  File upload is handled before saving so the post payload stays lean.
+                  File upload is handled before saving so the post payload stays
+                  lean.
                 </div>
                 <div className="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3">
                   Search is title-based to keep result filtering predictable.
@@ -298,7 +335,9 @@ const PostManagementPage = () => {
         <Card className="border-slate-200/80 bg-white/90 shadow-lg shadow-slate-200/60 backdrop-blur">
           <CardHeader className="border-b border-slate-100 bg-gradient-to-r from-sky-50 via-white to-indigo-50">
             <CardTitle>Filters</CardTitle>
-            <CardDescription>Search and narrow down the current post catalogue.</CardDescription>
+            <CardDescription>
+              Search and narrow down the current post catalogue.
+            </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-4 p-6 lg:grid-cols-[1.2fr_0.8fr_0.8fr_0.8fr_auto]">
             <Input
@@ -306,7 +345,11 @@ const PostManagementPage = () => {
               aria-label="Search title"
               value={filters.query}
               onChange={(event) =>
-                setFilters((current) => ({ ...current, query: event.target.value, page: 0 }))
+                setFilters((current) => ({
+                  ...current,
+                  query: event.target.value,
+                  page: 0,
+                }))
               }
             />
             <select
@@ -363,7 +406,12 @@ const PostManagementPage = () => {
                 </option>
               ))}
             </select>
-            <Button type="button" variant="outline" className="h-11 rounded-xl" onClick={() => setFilters(initialFilters)}>
+            <Button
+              type="button"
+              variant="outline"
+              className="h-11 rounded-xl"
+              onClick={() => setFilters(initialFilters)}
+            >
               Reset
             </Button>
           </CardContent>
@@ -373,15 +421,21 @@ const PostManagementPage = () => {
           <section className="space-y-4">
             {postsQuery.isLoading ? (
               <Card className="border-slate-200/80 bg-white/90 shadow-lg shadow-slate-200/60 backdrop-blur">
-                <CardContent className="py-10 text-center text-slate-600">Loading posts...</CardContent>
+                <CardContent className="py-10 text-center text-slate-600">
+                  Loading posts...
+                </CardContent>
               </Card>
             ) : postsQuery.isError ? (
               <Card className="border-slate-200/80 bg-white/90 shadow-lg shadow-slate-200/60 backdrop-blur">
-                <CardContent className="py-10 text-center text-slate-600">Unable to load posts.</CardContent>
+                <CardContent className="py-10 text-center text-slate-600">
+                  Unable to load posts.
+                </CardContent>
               </Card>
             ) : posts.length === 0 ? (
               <Card className="border-slate-200/80 bg-white/90 shadow-lg shadow-slate-200/60 backdrop-blur">
-                <CardContent className="py-10 text-center text-slate-600">No posts found for the current filters.</CardContent>
+                <CardContent className="py-10 text-center text-slate-600">
+                  No posts found for the current filters.
+                </CardContent>
               </Card>
             ) : (
               posts.map((post) => {
@@ -396,9 +450,12 @@ const PostManagementPage = () => {
                     <CardHeader className="space-y-4 border-b border-slate-100 bg-gradient-to-r from-white via-slate-50 to-sky-50/60">
                       <div className="flex flex-wrap items-start justify-between gap-3">
                         <div className="space-y-1">
-                          <CardTitle className="text-xl leading-tight text-slate-950">{post.postTitle}</CardTitle>
+                          <CardTitle className="text-xl leading-tight text-slate-950">
+                            {post.postTitle}
+                          </CardTitle>
                           <CardDescription>
-                            {post.postCategory.replaceAll("_", " ")} · {formatDate(post.createdAt)}
+                            {post.postCategory.replaceAll("_", " ")} ·{" "}
+                            {formatDate(post.createdAt)}
                           </CardDescription>
                         </div>
                         <div className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-600 shadow-sm">
@@ -409,7 +466,11 @@ const PostManagementPage = () => {
                       <div className="grid gap-4 lg:grid-cols-[180px_minmax(0,1fr)]">
                         <div className="overflow-hidden rounded-2xl border border-slate-200 bg-slate-100">
                           {featuredThumb ? (
-                            <img src={featuredThumb} alt={post.postTitle} className="h-36 w-full object-cover" />
+                            <img
+                              src={featuredThumb}
+                              alt={post.postTitle}
+                              className="h-36 w-full object-cover"
+                            />
                           ) : (
                             <div className="flex h-36 items-center justify-center text-xs font-medium uppercase tracking-[0.2em] text-slate-400">
                               No image
@@ -418,7 +479,9 @@ const PostManagementPage = () => {
                         </div>
 
                         <div className="space-y-3">
-                          <p className="line-clamp-3 text-sm leading-6 text-slate-600">{post.postContent}</p>
+                          <p className="line-clamp-3 text-sm leading-6 text-slate-600">
+                            {post.postContent}
+                          </p>
                           <div className="flex flex-wrap gap-2 text-xs text-slate-500">
                             <span>Views: {post.viewCount ?? 0}</span>
                             <span>Likes: {post.likeCount ?? 0}</span>
@@ -441,7 +504,11 @@ const PostManagementPage = () => {
                       </div>
 
                       <div className="flex flex-wrap gap-2">
-                        <Button type="button" variant="outline" onClick={() => openEditor(post)}>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => openEditor(post)}
+                        >
                           <Edit3 className="mr-2 size-4" />
                           Edit
                         </Button>
@@ -482,7 +549,12 @@ const PostManagementPage = () => {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => setFilters((current) => ({ ...current, page: Math.max(0, current.page - 1) }))}
+                onClick={() =>
+                  setFilters((current) => ({
+                    ...current,
+                    page: Math.max(0, current.page - 1),
+                  }))
+                }
                 disabled={filters.page === 0}
               >
                 <ArrowLeft className="mr-2 size-4" />
@@ -494,7 +566,10 @@ const PostManagementPage = () => {
                 onClick={() =>
                   setFilters((current) => ({
                     ...current,
-                    page: Math.min(Math.max(stats.totalPages - 1, 0), current.page + 1),
+                    page: Math.min(
+                      Math.max(stats.totalPages - 1, 0),
+                      current.page + 1,
+                    ),
                   }))
                 }
                 disabled={filters.page >= Math.max(stats.totalPages - 1, 0)}
@@ -508,7 +583,9 @@ const PostManagementPage = () => {
           <aside className="space-y-4">
             <Card className="sticky top-24 border-slate-200/80 bg-white/95 shadow-xl shadow-slate-200/70 backdrop-blur">
               <CardHeader className="border-b border-slate-100 bg-gradient-to-r from-indigo-50 via-white to-sky-50">
-                <CardTitle>{selectedPostId ? "Edit post" : "Create post"}</CardTitle>
+                <CardTitle>
+                  {selectedPostId ? "Edit post" : "Create post"}
+                </CardTitle>
                 <CardDescription>
                   Use the editor to draft content or adjust an existing post.
                 </CardDescription>
@@ -520,7 +597,10 @@ const PostManagementPage = () => {
                     <Input
                       value={editor.postTitle}
                       onChange={(event) =>
-                        setEditor((current) => ({ ...current, postTitle: event.target.value }))
+                        setEditor((current) => ({
+                          ...current,
+                          postTitle: event.target.value,
+                        }))
                       }
                       className="bg-white"
                     />
@@ -567,13 +647,24 @@ const PostManagementPage = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Featured image</label>
-                    <Input type="file" accept="image/*" onChange={handleImageChange} className="bg-white" />
+                    <label className="text-sm font-medium">
+                      Featured image
+                    </label>
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      className="bg-white"
+                    />
                     {selectedImageFile ? (
-                      <p className="text-xs text-slate-500">Selected: {selectedImageFile.name}</p>
+                      <p className="text-xs text-slate-500">
+                        Selected: {selectedImageFile.name}
+                      </p>
                     ) : null}
                     {uploadImageMutation.isPending ? (
-                      <p className="text-xs text-slate-500">Uploading image...</p>
+                      <p className="text-xs text-slate-500">
+                        Uploading image...
+                      </p>
                     ) : null}
                     {imagePreviewUrl ? (
                       <img
@@ -590,7 +681,10 @@ const PostManagementPage = () => {
                       className="min-h-40 bg-white"
                       value={editor.postContent}
                       onChange={(event) =>
-                        setEditor((current) => ({ ...current, postContent: event.target.value }))
+                        setEditor((current) => ({
+                          ...current,
+                          postContent: event.target.value,
+                        }))
                       }
                     />
                   </div>
@@ -628,7 +722,12 @@ const PostManagementPage = () => {
                       <Plus className="mr-2 size-4" />
                       {selectedPostId ? "Update post" : "Create post"}
                     </Button>
-                    <Button type="button" variant="outline" className="rounded-xl" onClick={resetEditor}>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="rounded-xl"
+                      onClick={resetEditor}
+                    >
                       Reset
                     </Button>
                   </div>
