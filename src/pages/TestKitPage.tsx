@@ -610,6 +610,20 @@ const TestKitPage: React.FC = () => {
                 </p>
               )}
             </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="isAvailable"
+                {...form.register("isAvailable")}
+                className="h-4 w-4 rounded border-gray-300"
+              />
+              <label
+                htmlFor="isAvailable"
+                className="text-sm font-medium cursor-pointer"
+              >
+                Available
+              </label>
+            </div>
             <div className="flex justify-end gap-2">
               <Button
                 type="button"
