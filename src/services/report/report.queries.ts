@@ -1,12 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import reportService, { type ReportsResponse, type CreateReportPayload, type UpdateReportStatusPayload } from "./reportService";
 import { toast } from "sonner";
+import { AxiosError } from "axios";
 
 // Query Keys
 export const reportKeys = {
   all: ["reports"],
   lists: () => [...reportKeys.all, "list"],
-  list: (filters: any) => [...reportKeys.lists(), filters],
+  list: (filters: Record<string, unknown>) => [...reportKeys.lists(), filters],
   details: () => [...reportKeys.all, "detail"],
   detail: (id: number) => [...reportKeys.details(), id],
 };
@@ -55,9 +56,9 @@ export const useCreateReportMutation = () => {
       toast.success("Report created successfully");
       queryClient.invalidateQueries({ queryKey: reportKeys.all });
     },
-    onError: (error: any) => {
-      const message = error?.response?.data?.message || "Failed to create report";
-      toast.error(message);
+    onError: (error: AxiosError) => {
+      const message = (error?.response?.data as Record<string, unknown>)?.message || "Failed to create report";
+      toast.error(message as string);
     },
   });
 };
@@ -76,9 +77,9 @@ export const useUpdateReportStatusMutation = () => {
       queryClient.invalidateQueries({ queryKey: reportKeys.all });
       queryClient.invalidateQueries({ queryKey: reportKeys.detail(id) });
     },
-    onError: (error: any) => {
-      const message = error?.response?.data?.message || "Failed to update report status";
-      toast.error(message);
+    onError: (error: AxiosError) => {
+      const message = (error?.response?.data as Record<string, unknown>)?.message || "Failed to update report status";
+      toast.error(message as string);
     },
   });
 };
@@ -96,9 +97,9 @@ export const useApproveReportMutation = () => {
       queryClient.invalidateQueries({ queryKey: reportKeys.all });
       queryClient.invalidateQueries({ queryKey: reportKeys.detail(id) });
     },
-    onError: (error: any) => {
-      const message = error?.response?.data?.message || "Failed to approve report";
-      toast.error(message);
+    onError: (error: AxiosError) => {
+      const message = (error?.response?.data as Record<string, unknown>)?.message || "Failed to approve report";
+      toast.error(message as string);
     },
   });
 };
@@ -116,9 +117,9 @@ export const useRejectReportMutation = () => {
       queryClient.invalidateQueries({ queryKey: reportKeys.all });
       queryClient.invalidateQueries({ queryKey: reportKeys.detail(id) });
     },
-    onError: (error: any) => {
-      const message = error?.response?.data?.message || "Failed to reject report";
-      toast.error(message);
+    onError: (error: AxiosError) => {
+      const message = (error?.response?.data as Record<string, unknown>)?.message || "Failed to reject report";
+      toast.error(message as string);
     },
   });
 };
@@ -139,9 +140,9 @@ export const useDownloadReportMutation = () => {
       window.URL.revokeObjectURL(url);
       toast.success("Report downloaded successfully");
     },
-    onError: (error: any) => {
-      const message = error?.response?.data?.message || "Failed to download report";
-      toast.error(message);
+    onError: (error: AxiosError) => {
+      const message = (error?.response?.data as Record<string, unknown>)?.message || "Failed to download report";
+      toast.error(message as string);
     },
   });
 };

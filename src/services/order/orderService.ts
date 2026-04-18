@@ -1,5 +1,12 @@
 import axios from "@/lib/axios";
 
+export interface ApiResponse<T = unknown> {
+  code: number;
+  data: T;
+  message: string;
+  timestamp: string;
+}
+
 export interface Order {
   id: number;
   orderStatus: string;
@@ -10,7 +17,7 @@ export interface Order {
   createdAt?: string;
   updatedAt?: string;
   totalPrice?: number;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface OrdersResponse {
@@ -28,9 +35,9 @@ export interface OrdersResponse {
 export interface NewOrdersResponse {
   code: number;
   data: {
-    availableStaff: Array<{ id: number; name: string; [key: string]: any }>;
+    availableStaff: Array<{ id: number; name: string; [key: string]: unknown }>;
     orders: Order[];
-    [key: string]: any;
+    [key: string]: unknown;
   };
   message: string;
   timestamp: string;
@@ -42,7 +49,7 @@ class OrderService {
    */
   async getAllOrders(): Promise<OrdersResponse> {
     const response = await axios.get("/api/v1/manager/orders");
-    return response.data;
+    return response.data as OrdersResponse;
   }
 
   /**
@@ -50,15 +57,15 @@ class OrderService {
    */
   async getNewOrders(): Promise<NewOrdersResponse> {
     const response = await axios.get("/api/v1/manager/orders/new");
-    return response.data;
+    return response.data as NewOrdersResponse;
   }
 
   /**
    * Get single order by ID
    */
-  async getOrderById(id: number): Promise<any> {
+  async getOrderById(id: number): Promise<ApiResponse<Order>> {
     const response = await axios.get(`/api/v1/manager/orders/${id}`);
-    return response.data;
+    return response.data as ApiResponse<Order>;
   }
 
   /**
@@ -67,12 +74,12 @@ class OrderService {
   async assignCollectionStaff(
     orderId: number,
     staffId: number
-  ): Promise<any> {
+  ): Promise<ApiResponse<unknown>> {
     const response = await axios.post(
       `/api/v1/manager/orders/${orderId}/assign-collection-staff`,
       { staffId }
     );
-    return response.data;
+    return response.data as ApiResponse<unknown>;
   }
 
   /**
@@ -81,12 +88,12 @@ class OrderService {
   async assignAnalysisStaff(
     orderId: number,
     staffId: number
-  ): Promise<any> {
+  ): Promise<ApiResponse<unknown>> {
     const response = await axios.post(
       `/api/v1/manager/orders/${orderId}/assign-analysis-staff`,
       { staffId }
     );
-    return response.data;
+    return response.data as ApiResponse<unknown>;
   }
 
   /**
@@ -95,12 +102,12 @@ class OrderService {
   async updateOrderStatus(
     orderId: number,
     status: string
-  ): Promise<any> {
+  ): Promise<ApiResponse<unknown>> {
     const response = await axios.put(
       `/api/v1/manager/orders/${orderId}/status`,
       { status }
     );
-    return response.data;
+    return response.data as ApiResponse<unknown>;
   }
 }
 

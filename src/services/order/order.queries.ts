@@ -1,12 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import orderService, { type OrdersResponse, type NewOrdersResponse } from "./orderService";
 import { toast } from "sonner";
+import { AxiosError } from "axios";
 
 // Query Keys
 export const orderKeys = {
   all: ["orders"],
   lists: () => [...orderKeys.all, "list"],
-  list: (filters: any) => [...orderKeys.lists(), filters],
+  list: (filters: Record<string, unknown>) => [...orderKeys.lists(), filters],
   details: () => [...orderKeys.all, "detail"],
   detail: (id: number) => [...orderKeys.details(), id],
   new: () => [...orderKeys.all, "new"],
@@ -60,9 +61,9 @@ export const useAssignCollectionStaffMutation = () => {
       queryClient.invalidateQueries({ queryKey: orderKeys.all });
       queryClient.invalidateQueries({ queryKey: orderKeys.detail(orderId) });
     },
-    onError: (error: any) => {
-      const message = error?.response?.data?.message || "Failed to assign collection staff";
-      toast.error(message);
+    onError: (error: AxiosError) => {
+      const message = (error?.response?.data as Record<string, unknown>)?.message || "Failed to assign collection staff";
+      toast.error(message as string);
     },
   });
 };
@@ -81,9 +82,9 @@ export const useAssignAnalysisStaffMutation = () => {
       queryClient.invalidateQueries({ queryKey: orderKeys.all });
       queryClient.invalidateQueries({ queryKey: orderKeys.detail(orderId) });
     },
-    onError: (error: any) => {
-      const message = error?.response?.data?.message || "Failed to assign analysis staff";
-      toast.error(message);
+    onError: (error: AxiosError) => {
+      const message = (error?.response?.data as Record<string, unknown>)?.message || "Failed to assign analysis staff";
+      toast.error(message as string);
     },
   });
 };
@@ -102,9 +103,9 @@ export const useUpdateOrderStatusMutation = () => {
       queryClient.invalidateQueries({ queryKey: orderKeys.all });
       queryClient.invalidateQueries({ queryKey: orderKeys.detail(orderId) });
     },
-    onError: (error: any) => {
-      const message = error?.response?.data?.message || "Failed to update order status";
-      toast.error(message);
+    onError: (error: AxiosError) => {
+      const message = (error?.response?.data as Record<string, unknown>)?.message || "Failed to update order status";
+      toast.error(message as string);
     },
   });
 };

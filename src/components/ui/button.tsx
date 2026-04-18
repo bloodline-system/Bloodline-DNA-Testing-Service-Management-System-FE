@@ -64,4 +64,6 @@ function Button({
   )
 }
 
+// @ts-expect-error - buttonVariants is a non-component export used in other UI files
+// eslint-disable-next-line react-refresh/only-export-components
 export { Button, buttonVariants }
