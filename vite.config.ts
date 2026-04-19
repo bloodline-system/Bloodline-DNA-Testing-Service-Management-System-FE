@@ -6,21 +6,29 @@ import path from "path";
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
+
+  return {
+    plugins: [react(), tailwindcss()],
+    resolve: {
+      alias: {
+        "@": path.resolve(__dirname, "./src"),
+      },
+    },
+    server: {
+      proxy: {
+        "/api": {
+          target: env.VITE_API_URL,
+          changeOrigin: true,
+          secure: false,
+        },
+      },
+    },
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), "");
   const apiTarget = env.VITE_API_URL || "http://localhost:8080";
 
   return {
     plugins: [react(), tailwindcss()],
-    // Tailwind v4 uses a native binding (@tailwindcss/oxide-*) on Node.
-    // Vite's dependency optimizer (rolldown) can mistakenly try to prebundle
-    // that native .node file and crash on Windows.
-    // Exclude it from optimizeDeps so Node can load it normally at runtime.
-    optimizeDeps: {
-      exclude: [
-        "@tailwindcss/oxide",
-        "@tailwindcss/oxide-win32-x64-msvc",
-        "@tailwindcss/oxide-win32-arm64-msvc",
-      ],
-    },
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),
@@ -32,13 +40,16 @@ export default defineConfig(({ mode }) => {
           target: apiTarget,
           changeOrigin: true,
           secure: false,
-          configure: (proxy: any) => {
-            proxy.on("proxyReq", (proxyReq: any) => {
+          // Backend hiện tại trả 403 "Invalid CORS request" khi có header Origin.
+          // Khi dev/test gọi qua Vite proxy, browser sẽ gửi Origin; strip header này giúp BE xử lý như same-origin.
+          configure: (proxy) => {
+            proxy.on("proxyReq", (proxyReq) => {
               proxyReq.removeHeader("origin");
             });
           },
         },
       },
     },
+  };
   };
 });
