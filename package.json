@@ -12,15 +12,8 @@
     "test:auth": "codeceptjs run tests/auth/*.test.js",
     "test:homepage": "codeceptjs run tests/homepage/*.test.js",
     "test:testkit": "codeceptjs run tests/testkit/*.test.js",
-
-    "test:post-management": "codeceptjs run tests/post-management/*.test.js",
     "test:debug": "codeceptjs run --debug",
     "test:headless": "HEADLESS=true codeceptjs run"
-
-
-    "test:debug": "codeceptjs run --debug",
-    "test:headless": "HEADLESS=true codeceptjs run"
-
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
