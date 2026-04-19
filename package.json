@@ -7,7 +7,18 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
+<<<<<<< Updated upstream
     "preview": "vite preview"
+=======
+    "preview": "vite preview",
+    "test": "codeceptjs run",
+    "test:auth": "codeceptjs run tests/auth/*.test.js",
+    "test:homepage": "codeceptjs run tests/homepage/*.test.js",
+    "test:testkit": "codeceptjs run tests/testkit/*.test.js",
+    "test:post-management": "codeceptjs run tests/post-management/*.test.js",
+    "test:debug": "codeceptjs run --debug",
+    "test:headless": "HEADLESS=true codeceptjs run"
+>>>>>>> Stashed changes
   },
   "dependencies": {
     "@fontsource-variable/geist": "^5.2.8",
