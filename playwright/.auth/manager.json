@@ -1,0 +1,14 @@
+{
+  "cookies": [],
+  "origins": [
+    {
+      "origin": "http://localhost:5173",
+      "localStorage": [
+        {
+          "name": "auth-storage",
+          "value": "{\"accessToken\":\"fake-token-for-testing\",\"refreshToken\":\"fake-refresh-token\",\"userId\":1}"
+        }
+      ]
+    }
+  ]
+}

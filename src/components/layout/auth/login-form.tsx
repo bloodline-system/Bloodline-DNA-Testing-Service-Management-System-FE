@@ -85,6 +85,7 @@ export function LoginForm({ className, onSubmit, ...props }: LoginFormProps) {
             aria-invalid={Boolean(errors.username)}
             {...register("username")}
             className="bg-background"
+            data-testid="username-input"
           />
           <FieldError errors={[errors.username]} />
         </Field>
@@ -104,6 +105,7 @@ export function LoginForm({ className, onSubmit, ...props }: LoginFormProps) {
             aria-invalid={Boolean(errors.password)}
             {...register("password")}
             className="bg-background"
+            data-testid="password-input"
           />
           <FieldError errors={[errors.password]} />
         </Field>
@@ -113,6 +115,7 @@ export function LoginForm({ className, onSubmit, ...props }: LoginFormProps) {
             disabled={
               loginMutation.isPending || isSubmitting || !isValid || !isDirty
             }
+            data-testid="login-btn"
           >
             {loginMutation.isPending || isSubmitting
               ? "Logging in..."

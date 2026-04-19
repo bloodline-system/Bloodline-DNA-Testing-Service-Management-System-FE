@@ -122,3 +122,32 @@ npm run dev
 ```bash
 npm run build
 ```
+
+## Playwright End-to-End Testing
+
+This repository also includes a Playwright test suite for manager auth, order APIs/UI, and report APIs/UI.
+
+### Install dependencies
+
+```bash
+npm install
+npx playwright install
+```
+
+### Run Playwright tests
+
+```bash
+BASE_URL=http://localhost:5173 API_BASE_URL=http://localhost:8080/api npm run test:e2e
+```
+
+### Run headed
+
+```bash
+BASE_URL=http://localhost:5173 API_BASE_URL=http://localhost:8080 npm run test:e2e:headed
+```
+
+### Run debug mode
+
+```bash
+BASE_URL=http://localhost:5173 API_BASE_URL=http://localhost:8080 npm run test:e2e:debug
+```
