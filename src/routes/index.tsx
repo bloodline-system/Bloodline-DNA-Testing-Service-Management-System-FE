@@ -1,7 +1,9 @@
 import {
   ProtectedRoute,
   AuthRoute,
+  RoleProtectedRoute,
 } from "@/components/layout/auth/protected-route";
+import EmployeeManagementPage from "@/pages/EmployeeManagementPage";
 import HomePage from "@/pages/HomePage";
 import ProfilePage from "@/pages/ProfilePage";
 import SignInPage from "@/pages/SignInPage";
@@ -23,6 +25,9 @@ const AppRoutes = () => {
           <Route path="/order" element={<OrderPage />} />
           <Route path="/report" element={<ReportPage />} />
           <Route path="/manager/posts" element={<PostManagementPage />} />
+        </Route>
+        <Route element={<RoleProtectedRoute allow={["ADMIN", "MANAGER"]} />}>
+          <Route path="/admin/employees" element={<EmployeeManagementPage />} />
         </Route>
 
         {/* Auth routes */}

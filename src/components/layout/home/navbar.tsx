@@ -1,26 +1,11 @@
-"use client";
+'use client';
 
-import {
-  Book,
-  HelpCircle,
-  LogOut,
-  Menu,
-  Settings,
-  Sunset,
-  Trees,
-  User,
-  Zap,
-} from "lucide-react";
-import { useNavigate } from "react-router";
+import { Book, HelpCircle, LogOut, Menu, Settings, Sunset, Trees, User, UsersRound, Zap } from 'lucide-react';
+import { useNavigate } from 'react-router';
 
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,7 +13,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from '@/components/ui/dropdown-menu';
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -36,18 +21,12 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import { cn } from "@/lib/utils";
-import { useLogoutMutation } from "@/services/auth/auth.queries";
-import type { UserProfileResponse } from "@/services/user/types";
-import { useAuthStore } from "@/stores/auth/useAuthStore";
+} from '@/components/ui/navigation-menu';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { cn } from '@/lib/utils';
+import { useLogoutMutation } from '@/services/auth/auth.queries';
+import type { UserProfileResponse } from '@/services/user/types';
+import { useAuthStore } from '@/stores/auth/useAuthStore';
 
 interface MenuItem {
   title: string;
@@ -83,86 +62,85 @@ interface Navbar1Props {
 
 const Navbar = ({
   logo = {
-    url: "https://www.shadcnblocks.com",
-    src: "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/logos/shadcnblockscom-icon.svg",
-    alt: "logo",
-    title: "Shadcnblocks.com",
+    url: 'https://www.shadcnblocks.com',
+    src: 'https://deifkwefumgah.cloudfront.net/shadcnblocks/block/logos/shadcnblockscom-icon.svg',
+    alt: 'logo',
+    title: 'Shadcnblocks.com',
   },
   menu = [
-    { title: "Home", url: "#" },
+    { title: 'Home', url: '#' },
     {
-      title: "Products",
-      url: "#",
+      title: 'Products',
+      url: '#',
       items: [
         {
-          title: "Blog",
-          description: "The latest industry news, updates, and info",
+          title: 'Blog',
+          description: 'The latest industry news, updates, and info',
           icon: <Book className="size-5 shrink-0" />,
-          url: "#",
+          url: '#',
         },
         {
-          title: "Company",
-          description: "Our mission is to innovate and empower the world",
+          title: 'Company',
+          description: 'Our mission is to innovate and empower the world',
           icon: <Trees className="size-5 shrink-0" />,
-          url: "#",
+          url: '#',
         },
         {
-          title: "Careers",
-          description: "Browse job listing and discover our workspace",
+          title: 'Careers',
+          description: 'Browse job listing and discover our workspace',
           icon: <Sunset className="size-5 shrink-0" />,
-          url: "#",
+          url: '#',
         },
         {
-          title: "Support",
-          description:
-            "Get in touch with our support team or visit our community forums",
+          title: 'Support',
+          description: 'Get in touch with our support team or visit our community forums',
           icon: <Zap className="size-5 shrink-0" />,
-          url: "#",
+          url: '#',
         },
       ],
     },
     {
-      title: "Resources",
-      url: "#",
+      title: 'Resources',
+      url: '#',
       items: [
         {
-          title: "Help Center",
-          description: "Get all the answers you need right here",
+          title: 'Help Center',
+          description: 'Get all the answers you need right here',
           icon: <Zap className="size-5 shrink-0" />,
-          url: "#",
+          url: '#',
         },
         {
-          title: "Contact Us",
-          description: "We are here to help you with any questions you have",
+          title: 'Contact Us',
+          description: 'We are here to help you with any questions you have',
           icon: <Sunset className="size-5 shrink-0" />,
-          url: "#",
+          url: '#',
         },
         {
-          title: "Status",
-          description: "Check the current status of our services and APIs",
+          title: 'Status',
+          description: 'Check the current status of our services and APIs',
           icon: <Trees className="size-5 shrink-0" />,
-          url: "#",
+          url: '#',
         },
         {
-          title: "Terms of Service",
-          description: "Our terms and conditions for using our services",
+          title: 'Terms of Service',
+          description: 'Our terms and conditions for using our services',
           icon: <Book className="size-5 shrink-0" />,
-          url: "#",
+          url: '#',
         },
       ],
     },
     {
-      title: "Pricing",
-      url: "#",
+      title: 'Pricing',
+      url: '#',
     },
     {
-      title: "Blog",
-      url: "#",
+      title: 'Blog',
+      url: '#',
     },
   ],
   auth = {
-    login: { title: "Login", url: "#" },
-    signup: { title: "Sign up", url: "#" },
+    login: { title: 'Login', url: '#' },
+    signup: { title: 'Sign up', url: '#' },
   },
   profile = null,
   inverted = false,
@@ -176,7 +154,8 @@ const Navbar = ({
   const { mutateAsync: logout, isPending: isLoggingOut } = useLogoutMutation();
 
   const userProfile = getUserProfile(profile, userId);
-  const isManagementUser = ["ADMIN", "MANAGER"].includes((profile?.role ?? "").toUpperCase());
+  const normalizedRole = (profile?.role ?? '').toUpperCase();
+  const isManagementUser = ['ADMIN', 'MANAGER'].includes(normalizedRole);
 
   const isAuthenticated = Boolean(accessToken);
 
@@ -187,39 +166,25 @@ const Navbar = ({
       }
     } finally {
       clearSession();
-      navigate("/sign-in");
+      navigate('/sign-in');
     }
   };
 
   return (
-    <section className={cn("py-4", className)}>
+    <section className={cn('py-4', className)}>
       <div className="container">
         {/* Desktop Menu */}
         <nav className="hidden items-center justify-between lg:flex">
           <div className="flex items-center gap-6">
             {/* Logo */}
-            <a
-              href={logo.url}
-              className={cn(
-                "flex items-center gap-2 text-primary transition-colors duration-150",
-                inverted && "text-white",
-              )}
-            >
-              <img
-                src={logo.src}
-                className="max-h-8 dark:invert"
-                alt={logo.alt}
-              />
-              <span className="text-lg font-semibold tracking-tighter">
-                {logo.title}
-              </span>
+            <a href={logo.url} className={cn('flex items-center gap-2 text-primary transition-colors duration-150', inverted && 'text-white')}>
+              <img src={logo.src} className="max-h-8 dark:invert" alt={logo.alt} />
+              <span className="text-lg font-semibold tracking-tighter">{logo.title}</span>
             </a>
           </div>
           <div className="flex items-center">
             <NavigationMenu>
-              <NavigationMenuList>
-                {menu.map((item) => renderMenuItem(item, inverted))}
-              </NavigationMenuList>
+              <NavigationMenuList>{menu.map((item) => renderMenuItem(item, inverted))}</NavigationMenuList>
             </NavigationMenu>
           </div>
           {!isAuthenticated ? (
@@ -229,10 +194,10 @@ const Navbar = ({
                 variant="outline"
                 size="sm"
                 className={cn(
-                  "transition-colors duration-150",
+                  'transition-colors duration-150',
                   inverted
-                    ? "border-white/70 bg-transparent text-white hover:bg-white/10"
-                    : "border-slate-300 bg-white text-slate-900 hover:bg-slate-50",
+                    ? 'border-white/70 bg-transparent text-white hover:bg-white/10'
+                    : 'border-slate-300 bg-white text-slate-900 hover:bg-slate-50'
                 )}
               >
                 <a href={auth.login.url}>{auth.login.title}</a>
@@ -241,10 +206,8 @@ const Navbar = ({
                 asChild
                 size="sm"
                 className={cn(
-                  "transition-colors duration-150",
-                  inverted
-                    ? "bg-white text-sky-700 hover:bg-white/90"
-                    : "bg-primary text-white hover:bg-sky-700",
+                  'transition-colors duration-150',
+                  inverted ? 'bg-white text-sky-700 hover:bg-white/90' : 'bg-primary text-white hover:bg-sky-700'
                 )}
               >
                 <a href={auth.signup.url}>{auth.signup.title}</a>
@@ -253,69 +216,52 @@ const Navbar = ({
           ) : (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className={cn(
-                    "h-auto rounded-full px-2 py-1 hover:bg-muted/60",
-                    inverted && "text-white hover:bg-white/10",
-                  )}
-                >
+                <Button variant="ghost" className={cn('h-auto rounded-full px-2 py-1 hover:bg-muted/60', inverted && 'text-white hover:bg-white/10')}>
                   <div className="flex items-center gap-2">
                     <Avatar className="size-9 border border-slate-200/50">
-                      <AvatarImage
-                        alt={userProfile.name}
-                        src={userProfile.avatarUrl}
-                      />
+                      <AvatarImage alt={userProfile.name} src={userProfile.avatarUrl} />
                       <AvatarFallback>{userProfile.initials}</AvatarFallback>
                     </Avatar>
-                    <span className="text-sm font-medium">
-                      Hey, {userProfile.name}
-                    </span>
+                    <span className="text-sm font-medium">Hey, {userProfile.name}</span>
                   </div>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-60">
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm leading-none font-medium">
-                      {userProfile.name}
-                    </p>
-                    {userProfile.email && (
-                      <p className="text-muted-foreground text-xs leading-none">
-                        {userProfile.email}
-                      </p>
-                    )}
+                    <p className="text-sm leading-none font-medium">{userProfile.name}</p>
+                    {userProfile.email && <p className="text-muted-foreground text-xs leading-none">{userProfile.email}</p>}
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => navigate("/profile")}>
+                <DropdownMenuItem onClick={() => navigate('/profile')}>
                   <User />
                   Profile
                 </DropdownMenuItem>
                 {isManagementUser ? (
-                  <DropdownMenuItem onClick={() => navigate("/manager/posts") }>
+                  <DropdownMenuItem onClick={() => navigate('/manager/posts')}>
                     <Book />
                     Manage posts
                   </DropdownMenuItem>
                 ) : null}
-                <DropdownMenuItem
-                  onClick={() => navigate("/profile?tab=account")}
-                >
+                {isManagementUser ? (
+                  <DropdownMenuItem onClick={() => navigate('/admin/employees')}>
+                    <UsersRound />
+                    Manage employees
+                  </DropdownMenuItem>
+                ) : null}
+                <DropdownMenuItem onClick={() => navigate('/profile?tab=account')}>
                   <Settings />
                   Settings
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate("#contact")}>
+                <DropdownMenuItem onClick={() => navigate('#contact')}>
                   <HelpCircle />
                   Help
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  variant="destructive"
-                  onClick={() => void handleLogout()}
-                  disabled={isLoggingOut}
-                >
+                <DropdownMenuItem variant="destructive" onClick={() => void handleLogout()} disabled={isLoggingOut}>
                   <LogOut />
-                  {isLoggingOut ? "Logging out..." : "Log out"}
+                  {isLoggingOut ? 'Logging out...' : 'Log out'}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -327,22 +273,14 @@ const Navbar = ({
           <div className="flex items-center justify-between">
             {/* Logo */}
             <a href={logo.url} className="flex items-center gap-2">
-              <img
-                src={logo.src}
-                className="max-h-8 dark:invert"
-                alt={logo.alt}
-              />
+              <img src={logo.src} className="max-h-8 dark:invert" alt={logo.alt} />
             </a>
             <Sheet>
               <SheetTrigger asChild>
                 <Button
                   variant="outline"
                   size="icon"
-                  className={cn(
-                    "transition-colors duration-150",
-                    inverted &&
-                      "border-white/70 bg-transparent text-white hover:bg-white/10",
-                  )}
+                  className={cn('transition-colors duration-150', inverted && 'border-white/70 bg-transparent text-white hover:bg-white/10')}
                 >
                   <Menu className="size-4" />
                 </Button>
@@ -351,20 +289,12 @@ const Navbar = ({
                 <SheetHeader>
                   <SheetTitle>
                     <a href={logo.url} className="flex items-center gap-2">
-                      <img
-                        src={logo.src}
-                        className="max-h-8 dark:invert"
-                        alt={logo.alt}
-                      />
+                      <img src={logo.src} className="max-h-8 dark:invert" alt={logo.alt} />
                     </a>
                   </SheetTitle>
                 </SheetHeader>
                 <div className="flex flex-col gap-6 p-4">
-                  <Accordion
-                    type="single"
-                    collapsible
-                    className="flex w-full flex-col gap-4"
-                  >
+                  <Accordion type="single" collapsible className="flex w-full flex-col gap-4">
                     {menu.map((item) => renderMobileMenuItem(item))}
                   </Accordion>
 
@@ -381,43 +311,37 @@ const Navbar = ({
                     <div className="flex items-center justify-between rounded-lg border p-3">
                       <div className="flex items-center gap-3">
                         <Avatar className="size-10">
-                          <AvatarImage
-                            alt={userProfile.name}
-                            src={userProfile.avatarUrl}
-                          />
-                          <AvatarFallback>
-                            {userProfile.initials}
-                          </AvatarFallback>
+                          <AvatarImage alt={userProfile.name} src={userProfile.avatarUrl} />
+                          <AvatarFallback>{userProfile.initials}</AvatarFallback>
                         </Avatar>
                         <div>
-                          <p className="text-sm font-semibold">
-                            Hey, {userProfile.name}
-                          </p>
-                          {userProfile.email && (
-                            <p className="text-muted-foreground text-xs">
-                              {userProfile.email}
-                            </p>
-                          )}
+                          <p className="text-sm font-semibold">Hey, {userProfile.name}</p>
+                          {userProfile.email && <p className="text-muted-foreground text-xs">{userProfile.email}</p>}
                         </div>
                       </div>
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => void handleLogout()}
-                        disabled={isLoggingOut}
-                      >
+                      <Button variant="destructive" size="sm" onClick={() => void handleLogout()} disabled={isLoggingOut}>
                         <LogOut className="mr-2 size-4" />
-                        {isLoggingOut ? "Logging out" : "Log out"}
+                        {isLoggingOut ? 'Logging out' : 'Log out'}
                       </Button>
                     </div>
                   )}
                   {isAuthenticated && isManagementUser ? (
-                    <Button asChild variant="outline" className="w-full">
-                      <a href="/manager/posts">
-                        <Book className="mr-2 size-4" />
-                        Manage posts
-                      </a>
-                    </Button>
+                    <div className="grid gap-2">
+                      <Button asChild variant="outline" className="w-full">
+                        <a href="/manager/posts">
+                          <Book className="mr-2 size-4" />
+                          Manage posts
+                        </a>
+                      </Button>
+                      {isManagementUser ? (
+                        <Button asChild variant="outline" className="w-full">
+                          <a href="/admin/employees">
+                            <UsersRound className="mr-2 size-4" />
+                            Manage employees
+                          </a>
+                        </Button>
+                      ) : null}
+                    </div>
                   ) : null}
                 </div>
               </SheetContent>
@@ -435,10 +359,10 @@ const renderMenuItem = (item: MenuItem, inverted: boolean) => {
       <NavigationMenuItem key={item.title}>
         <NavigationMenuTrigger
           className={cn(
-            "transition-colors duration-150",
+            'transition-colors duration-150',
             inverted
-              ? "text-white hover:text-white"
-              : "bg-transparent text-slate-900 shadow-none hover:bg-transparent hover:text-slate-900 hover:shadow-sm data-open:bg-transparent data-open:hover:bg-transparent",
+              ? 'text-white hover:text-white'
+              : 'bg-transparent text-slate-900 shadow-none hover:bg-transparent hover:text-slate-900 hover:shadow-sm data-open:bg-transparent data-open:hover:bg-transparent'
           )}
         >
           {item.title}
@@ -459,10 +383,10 @@ const renderMenuItem = (item: MenuItem, inverted: boolean) => {
       <NavigationMenuLink
         href={item.url}
         className={cn(
-          "group inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors duration-150",
+          'group inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors duration-150',
           inverted
-            ? "bg-transparent text-white hover:bg-white/10 hover:text-white"
-            : "bg-transparent text-slate-900 shadow-none hover:bg-transparent hover:text-slate-900 hover:shadow-sm",
+            ? 'bg-transparent text-white hover:bg-white/10 hover:text-white'
+            : 'bg-transparent text-slate-900 shadow-none hover:bg-transparent hover:text-slate-900 hover:shadow-sm'
         )}
       >
         {item.title}
@@ -475,9 +399,7 @@ const renderMobileMenuItem = (item: MenuItem) => {
   if (item.items) {
     return (
       <AccordionItem key={item.title} value={item.title} className="border-b-0">
-        <AccordionTrigger className="text-md py-0 font-semibold hover:no-underline">
-          {item.title}
-        </AccordionTrigger>
+        <AccordionTrigger className="text-md py-0 font-semibold hover:no-underline">{item.title}</AccordionTrigger>
         <AccordionContent className="mt-2">
           {item.items.map((subItem) => (
             <SubMenuLink key={subItem.title} item={subItem} />
@@ -503,11 +425,7 @@ const SubMenuLink = ({ item }: { item: MenuItem }) => {
       <div className="text-foreground">{item.icon}</div>
       <div>
         <div className="text-sm font-semibold">{item.title}</div>
-        {item.description && (
-          <p className="text-sm leading-snug text-muted-foreground">
-            {item.description}
-          </p>
-        )}
+        {item.description && <p className="text-sm leading-snug text-muted-foreground">{item.description}</p>}
       </div>
     </a>
   );
@@ -520,18 +438,12 @@ interface UserProfile {
   initials: string;
 }
 
-const getUserProfile = (
-  profile: UserProfileResponse | null,
-  userId: string | null,
-): UserProfile => {
-  const fallbackName = userId ? `User ${userId.slice(0, 6)}` : "User";
-  const name =
-    getFullName(profile?.firstName, profile?.lastName) ??
-    profile?.username ??
-    fallbackName;
+const getUserProfile = (profile: UserProfileResponse | null, userId: string | null): UserProfile => {
+  const fallbackName = userId ? `User ${userId.slice(0, 6)}` : 'User';
+  const name = getFullName(profile?.firstName, profile?.lastName) ?? profile?.username ?? fallbackName;
 
-  const email = profile?.email ?? "";
-  const avatarUrl = profile?.profileImageUrl ?? "";
+  const email = profile?.email ?? '';
+  const avatarUrl = profile?.profileImageUrl ?? '';
 
   return {
     name,
@@ -541,28 +453,25 @@ const getUserProfile = (
   };
 };
 
-const getFullName = (
-  givenName?: string | null,
-  familyName?: string | null,
-): string | null => {
-  const fullName = [givenName, familyName].filter(Boolean).join(" ").trim();
+const getFullName = (givenName?: string | null, familyName?: string | null): string | null => {
+  const fullName = [givenName, familyName].filter(Boolean).join(' ').trim();
   return fullName || null;
 };
 
 const getInitials = (name: string): string => {
   const words = name
-    .split(" ")
+    .split(' ')
     .map((word) => word.trim())
     .filter(Boolean)
     .slice(0, 2);
 
   if (!words.length) {
-    return "U";
+    return 'U';
   }
 
   return words
-    .map((word) => word[0]?.toUpperCase() ?? "")
-    .join("")
+    .map((word) => word[0]?.toUpperCase() ?? '')
+    .join('')
     .slice(0, 2);
 };
 
