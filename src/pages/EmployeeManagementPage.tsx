@@ -63,17 +63,11 @@ const EmployeeManagementPage = () => {
     return map;
   }, [profiles]);
 
-  const displayUsers = useMemo(
-    () => users.map((u) => mergeEmployeeWithProfile(u, profileByUsername.get(u.username))),
-    [users, profileByUsername],
-  );
+  const displayUsers = useMemo(() => users.map((u) => mergeEmployeeWithProfile(u, profileByUsername.get(u.username))), [users, profileByUsername]);
 
   const selectedUsername = selectedEmployee?.username ?? null;
   const profileFromList = selectedUsername ? profileByUsername.get(selectedUsername) : undefined;
-  const profileQuery = useAdminProfileByUsernameQuery(
-    selectedUsername,
-    Boolean(selectedUsername) && profileFromList === undefined,
-  );
+  const profileQuery = useAdminProfileByUsernameQuery(selectedUsername, Boolean(selectedUsername) && profileFromList === undefined);
 
   const updateUserMutation = useAdminUpdateUserMutation();
   const updateProfileMutation = useAdminUpdateProfileMutation();
@@ -269,6 +263,7 @@ const EmployeeManagementPage = () => {
               <Input
                 className="pl-9"
                 placeholder="Search name or email"
+                aria-label="Search name or email"
                 value={filters.search}
                 onChange={(event) => setFilters((current) => ({ ...current, search: event.target.value, page: 0 }))}
               />
