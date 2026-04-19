@@ -119,3 +119,28 @@ export const useUpdateOrderStatusMutation = () => {
     },
   });
 };
+
+/**
+ * Hook to create a new order
+ */
+export const useCreateOrderMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (orderData: {
+      testTypeId: number;
+      customerName: string;
+      email: string;
+      phone: string;
+      address: string;
+    }) => orderService.createOrder(orderData),
+    onSuccess: () => {
+      toast.success("Order created successfully");
+      queryClient.invalidateQueries({ queryKey: orderKeys.all });
+    },
+    onError: (error: any) => {
+      const message = error?.response?.data?.message || "Failed to create order";
+      toast.error(message);
+    },
+  });
+};

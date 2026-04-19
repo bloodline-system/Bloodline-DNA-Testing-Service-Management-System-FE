@@ -109,6 +109,20 @@ class OrderService {
     );
     return response.data as ApiResponse<unknown>;
   }
+
+  /**
+   * Create a new order
+   */
+  async createOrder(orderData: {
+    testTypeId: number;
+    customerName: string;
+    email: string;
+    phone: string;
+    address: string;
+  }): Promise<any> {
+    const response = await axios.post("/api/v1/orders", orderData);
+    return response.data;
+  }
 }
 
 export default new OrderService();
