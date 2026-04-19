@@ -2,12 +2,18 @@ import { setHeadlessWhen } from "@codeceptjs/configure";
 
 setHeadlessWhen(process.env.HEADLESS);
 
+const baseUrl =
+  process.env.E2E_BASE_URL ||
+  process.env.BASE_URL ||
+  process.env.PLAYWRIGHT_BASE_URL ||
+  "http://localhost:5173";
+
 export const config = {
   tests: "./tests/**/*.test.js",
   output: "./output",
   helpers: {
     Playwright: {
-      url: "http://localhost:5173",
+      url: baseUrl,
       show: true,
       browser: "chromium",
       waitForAction: 500,

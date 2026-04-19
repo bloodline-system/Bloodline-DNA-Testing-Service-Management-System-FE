@@ -1,10 +1,10 @@
-import { steps } from "../steps.js";
+import { authSteps } from "./auth.steps.js";
 
 Feature("Full Authentication Test Flow");
 
 Scenario("User can complete signup, login, then logout", async ({ I }) => {
   // Add custom steps to I
-  Object.assign(I, steps);
+  Object.assign(I, authSteps);
 
   const timestamp = Date.now();
   const randomEmail = `user${timestamp}@example.com`;
@@ -20,18 +20,42 @@ Scenario("User can complete signup, login, then logout", async ({ I }) => {
     password,
   );
 
-  // Already on homepage after login
-  I.wait(3);
+  // Logout (avoid fixed sleeps; wait for real UI signals)
+  await I.usePlaywrightTo("logout via navbar", async ({ page }) => {
+    await page.locator('[class*="size-9"]').first().click();
+    await page.getByText("Log out", { exact: true }).click();
+  });
 
-  // Click user profile avatar to open dropdown menu
-  I.click('[class*="size-9"]'); // Avatar element
-  I.wait(1);
+  // Verify logout success.
+  // App may redirect to /sign-in or stay on home ("Logout successfully!" toast).
+  await I.usePlaywrightTo("verify logged-out state", async ({ page }) => {
+    await page.waitForLoadState("domcontentloaded");
 
-  // Click logout button using XPath
-  I.click('//div[contains(text(), "Log out")]');
-  I.wait(2);
+    await page.waitForURL(
+      (url) => url.pathname === "/sign-in" || url.pathname === "/",
+      { timeout: 5000 },
+    );
 
-  // Verify logout success - redirected to sign-in
-  I.waitInUrl("/sign-in", 5);
-  I.see("Login to your account");
+    const pathname = new URL(page.url()).pathname;
+    if (pathname === "/sign-in") {
+      await page.getByText("Login to your account", { exact: true }).waitFor({
+        timeout: 5000,
+      });
+      return;
+    }
+
+    await page.getByText("Sign In", { exact: true }).first().waitFor({
+      timeout: 5000,
+    });
+
+    // Ensure logout menu item is not visible anymore.
+    const logoutVisibleCount = await page
+      .getByText("Log out", { exact: true })
+      .count();
+    if (logoutVisibleCount > 0) {
+      throw new Error(
+        'Expected to be logged out, but "Log out" is still visible',
+      );
+    }
+  });
 });

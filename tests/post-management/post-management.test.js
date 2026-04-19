@@ -41,7 +41,7 @@ async function attachSteps(I) {
 /** Đăng nhập MANAGER seed + mở /manager/posts (một step — tránh lỗi URL tương đối trong Playwright). */
 async function loginManagerAndPosts(I) {
   await attachSteps(I);
-  await I.loginForPostManagement({ role: "MANAGER" });
+  await I.ensureAuthorizedForPostManagement();
 }
 
 // -----------------------------------------------------------------------------
@@ -98,7 +98,16 @@ Scenario(
       async ({ page }) => {
         await page.goto(e2eAbsoluteUrl("/manager/posts"));
         await page.waitForLoadState("networkidle").catch(() => {});
-        await page.waitForTimeout(1000);
+
+        // Avoid fixed sleeps — wait for either expected UI state.
+        await Promise.race([
+          page
+            .getByText(POST_TEXT.heroHeading, { exact: true })
+            .waitFor({ state: "visible", timeout: 15000 }),
+          page
+            .getByText(POST_TEXT.loadError, { exact: true })
+            .waitFor({ state: "visible", timeout: 15000 }),
+        ]).catch(() => {});
 
         const heroVisible = await page
           .getByText(POST_TEXT.heroHeading, { exact: true })
