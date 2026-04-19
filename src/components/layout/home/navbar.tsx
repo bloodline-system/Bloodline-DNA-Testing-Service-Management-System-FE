@@ -200,7 +200,7 @@ const Navbar = ({
                     : 'border-slate-300 bg-white text-slate-900 hover:bg-slate-50'
                 )}
               >
-                <a href={auth.login.url}>{auth.login.title}</a>
+                <Link to={auth.login.url}>{auth.login.title}</Link>
               </Button>
               <Button
                 asChild
@@ -210,7 +210,7 @@ const Navbar = ({
                   inverted ? 'bg-white text-sky-700 hover:bg-white/90' : 'bg-primary text-white hover:bg-sky-700'
                 )}
               >
-                <a href={auth.signup.url}>{auth.signup.title}</a>
+                <Link to={auth.signup.url}>{auth.signup.title}</Link>
               </Button>
             </div>
           ) : (
@@ -301,10 +301,10 @@ const Navbar = ({
                   {!isAuthenticated ? (
                     <div className="flex flex-col gap-3">
                       <Button asChild variant="outline">
-                        <a href={auth.login.url}>{auth.login.title}</a>
+                        <Link to={auth.login.url}>{auth.login.title}</Link>
                       </Button>
                       <Button asChild>
-                        <a href={auth.signup.url}>{auth.signup.title}</a>
+                        <Link to={auth.signup.url}>{auth.signup.title}</Link>
                       </Button>
                     </div>
                   ) : (
