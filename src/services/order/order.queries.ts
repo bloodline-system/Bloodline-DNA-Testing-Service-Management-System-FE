@@ -2,9 +2,11 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import orderService, {
   type OrdersResponse,
   type NewOrdersResponse,
+  type CustomerOrderCreateRequest,
 } from "./orderService";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
+import { useAuthStore } from "@/stores/auth/useAuthStore";
 
 // Query Keys
 export const orderKeys = {
@@ -47,6 +49,73 @@ export const useOrderDetailQuery = (id: number | null) => {
     queryFn: () =>
       id ? orderService.getOrderById(id) : Promise.reject("No ID"),
     enabled: !!id,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  });
+};
+
+/**
+ * Hook to fetch single order details by customer
+ * Uses the customer order endpoint from the new API.
+ */
+export const useOrderDetailByCustomerQuery = (id: number | null) => {
+  return useQuery({
+    queryKey: id
+      ? ["order-detail-customer", id]
+      : ["order-detail-customer-disabled"],
+    queryFn: () =>
+      id ? orderService.getOrderDetailsByCustomer(id) : Promise.reject("No ID"),
+    enabled: !!id,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  });
+};
+
+export const useCustomerServicesQuery = () => {
+  const accessToken = useAuthStore((state) => state.accessToken);
+
+  return useQuery({
+    queryKey: ["customer-services"],
+    queryFn: () => orderService.getCustomerServices(),
+    enabled: !!accessToken,
+    staleTime: 1000 * 60 * 5,
+  });
+};
+
+export const useCustomerOrderFormDataQuery = (
+  medicalServiceId: number | null,
+) => {
+  const accessToken = useAuthStore((state) => state.accessToken);
+
+  return useQuery({
+    queryKey: medicalServiceId
+      ? ["customer-order-form-data", medicalServiceId]
+      : ["customer-order-form-data-disabled"],
+    queryFn: () =>
+      medicalServiceId
+        ? orderService.getCustomerOrderFormData(medicalServiceId)
+        : Promise.reject("No medical service id"),
+    enabled: !!accessToken && !!medicalServiceId,
+    staleTime: 1000 * 60 * 5,
+  });
+};
+
+export const useCustomerOrdersQuery = () => {
+  const accessToken = useAuthStore((state) => state.accessToken);
+
+  return useQuery<{
+    code: number;
+    data: Array<{
+      idServiceOrder: number;
+      orderStatus: string;
+      medicalServiceName?: string;
+      finalAmount?: number;
+      appointmentDate?: string;
+    }>;
+    message: string;
+    timestamp: string;
+  }>({
+    queryKey: ["customer-orders"],
+    queryFn: () => orderService.getCustomerOrders(),
+    enabled: !!accessToken,
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 };
@@ -139,7 +208,105 @@ export const useCreateOrderMutation = () => {
       queryClient.invalidateQueries({ queryKey: orderKeys.all });
     },
     onError: (error: any) => {
-      const message = error?.response?.data?.message || "Failed to create order";
+      const message =
+        error?.response?.data?.message || "Failed to create order";
+      toast.error(message);
+    },
+  });
+};
+
+export const useCreateCustomerOrderMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (orderData: CustomerOrderCreateRequest) => {
+      const createdOrder = await orderService.createCustomerOrder(orderData);
+      const createdOrderId = createdOrder?.data?.idServiceOrder;
+
+      if (!createdOrderId) {
+        return createdOrder;
+      }
+
+      try {
+        const participantRequests = orderData.participants ?? [];
+        if (participantRequests.length > 0) {
+          for (const participant of participantRequests) {
+            await orderService.addCustomerOrderParticipant(
+              createdOrderId,
+              participant,
+            );
+          }
+        }
+
+        if (orderData.idKit && Number(orderData.quantityKit ?? 0) > 0) {
+          await orderService.addCustomerOrderKit(createdOrderId, {
+            kitTestId: Number(orderData.idKit),
+            quantityOrdered: Number(orderData.quantityKit),
+          });
+        }
+      } catch (error) {
+        const message =
+          (error as AxiosError<{ message?: string }>)?.response?.data
+            ?.message ||
+          (error as Error)?.message ||
+          "Không thể lưu participants hoặc test kit cho đơn hàng";
+        throw new Error(
+          `Đơn hàng đã được tạo nhưng không thể lưu participants/test kit: ${message}`,
+        );
+      }
+
+      return createdOrder;
+    },
+    onSuccess: (_data) => {
+      toast.success("Đã tạo đơn hàng thành công");
+      void queryClient.invalidateQueries({ queryKey: ["customer-orders"] });
+      void queryClient.invalidateQueries({ queryKey: ["customer-services"] });
+    },
+    onError: (error: any) => {
+      const message =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Không thể tạo đơn hàng";
+      toast.error(message);
+    },
+  });
+};
+
+export const useAcceptCustomerOrderMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (orderId: number) => orderService.acceptCustomerOrder(orderId),
+    onSuccess: (_data, orderId) => {
+      toast.success("Đã xác nhận đơn hàng");
+      void queryClient.invalidateQueries({ queryKey: ["customer-orders"] });
+      void queryClient.invalidateQueries({
+        queryKey: ["order-detail-customer", orderId],
+      });
+    },
+    onError: (error: any) => {
+      const message =
+        error?.response?.data?.message || "Không thể xác nhận đơn hàng";
+      toast.error(message);
+    },
+  });
+};
+
+export const useCancelCustomerOrderMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (orderId: number) => orderService.cancelCustomerOrder(orderId),
+    onSuccess: (_data, orderId) => {
+      toast.success("Đã hủy đơn hàng");
+      void queryClient.invalidateQueries({ queryKey: ["customer-orders"] });
+      void queryClient.invalidateQueries({
+        queryKey: ["order-detail-customer", orderId],
+      });
+    },
+    onError: (error: any) => {
+      const message =
+        error?.response?.data?.message || "Không thể hủy đơn hàng";
       toast.error(message);
     },
   });

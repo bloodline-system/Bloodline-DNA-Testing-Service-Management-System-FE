@@ -26,6 +26,23 @@ interface HomeHeaderProps {
 
 export const HomeHeader = ({ profile = null }: HomeHeaderProps) => {
   const [isScrolled, setIsScrolled] = useState(false);
+  const isManagementUser = ["ADMIN", "MANAGER"].includes(
+    (profile?.role ?? "").toUpperCase(),
+  );
+  const isLoggedIn = !!profile;
+
+  const headerMenu = [
+    HOME_MENU[0],
+    ...(isLoggedIn
+      ? [
+          ...(isManagementUser
+            ? [{ title: "Dashboard", url: "/dashboard" }]
+            : []),
+          { title: "Orders", url: "/orders" },
+        ]
+      : []),
+    ...HOME_MENU.slice(1),
+  ];
 
   useEffect(() => {
     const onScroll = () => {
@@ -66,7 +83,7 @@ export const HomeHeader = ({ profile = null }: HomeHeaderProps) => {
         className="flex w-11/12 justify-center py-3"
         inverted={!isScrolled}
         logo={logo}
-        menu={HOME_MENU}
+        menu={headerMenu}
         auth={HOME_AUTH}
         profile={profile}
       />
