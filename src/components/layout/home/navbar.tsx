@@ -11,7 +11,7 @@ import {
   User,
   Zap,
 } from "lucide-react";
-import { useNavigate } from "react-router";
+import { useNavigate, Link } from "react-router";
 
 import {
   Accordion,
@@ -176,6 +176,9 @@ const Navbar = ({
   const { mutateAsync: logout, isPending: isLoggingOut } = useLogoutMutation();
 
   const userProfile = getUserProfile(profile, userId);
+  const isManagementUser = ["ADMIN", "MANAGER"].includes(
+    (profile?.role ?? "").toUpperCase(),
+  );
 
   const isAuthenticated = Boolean(accessToken);
 
@@ -234,7 +237,7 @@ const Navbar = ({
                     : "border-slate-300 bg-white text-slate-900 hover:bg-slate-50",
                 )}
               >
-                <a href={auth.login.url}>{auth.login.title}</a>
+                <Link to={auth.login.url}>{auth.login.title}</Link>
               </Button>
               <Button
                 asChild
@@ -246,7 +249,7 @@ const Navbar = ({
                     : "bg-primary text-white hover:bg-sky-700",
                 )}
               >
-                <a href={auth.signup.url}>{auth.signup.title}</a>
+                <Link to={auth.signup.url}>{auth.signup.title}</Link>
               </Button>
             </div>
           ) : (
@@ -291,6 +294,12 @@ const Navbar = ({
                   <User />
                   Profile
                 </DropdownMenuItem>
+                {isManagementUser ? (
+                  <DropdownMenuItem onClick={() => navigate("/manager/posts")}>
+                    <Book />
+                    Manage posts
+                  </DropdownMenuItem>
+                ) : null}
                 <DropdownMenuItem
                   onClick={() => navigate("/profile?tab=account")}
                 >
@@ -364,10 +373,10 @@ const Navbar = ({
                   {!isAuthenticated ? (
                     <div className="flex flex-col gap-3">
                       <Button asChild variant="outline">
-                        <a href={auth.login.url}>{auth.login.title}</a>
+                        <Link to={auth.login.url}>{auth.login.title}</Link>
                       </Button>
                       <Button asChild>
-                        <a href={auth.signup.url}>{auth.signup.title}</a>
+                        <Link to={auth.signup.url}>{auth.signup.title}</Link>
                       </Button>
                     </div>
                   ) : (
@@ -404,6 +413,14 @@ const Navbar = ({
                       </Button>
                     </div>
                   )}
+                  {isAuthenticated && isManagementUser ? (
+                    <Button asChild variant="outline" className="w-full">
+                      <Link to="/manager/posts">
+                        <Book className="mr-2 size-4" />
+                        Manage posts
+                      </Link>
+                    </Button>
+                  ) : null}
                 </div>
               </SheetContent>
             </Sheet>

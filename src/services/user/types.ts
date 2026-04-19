@@ -41,3 +41,9 @@ export interface UpdateUserProfileRequest {
   // Backend may ignore this field if unsupported.
   password?: string;
 }
+
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}

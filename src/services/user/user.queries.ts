@@ -5,6 +5,7 @@ import { getApiErrorMessage } from "@/lib/api-error";
 import { userService } from "./userService";
 import type {
   ApiResponse,
+  ChangePasswordRequest,
   ResponseObject,
   UpdateUserProfileRequest,
   UserProfileResponse,
@@ -64,8 +65,8 @@ export function useUpdateProfileMutation(username: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (payload: UpdateUserProfileRequest | FormData) => {
-      return await userService.updateProfile(username, payload);
+    mutationFn: async (payload: UpdateUserProfileRequest) => {
+      return await userService.updateMyProfile(payload);
     },
     onSuccess: () => {
       toast.success("Profile updated successfully.");
@@ -76,6 +77,20 @@ export function useUpdateProfileMutation(username: string) {
     },
     onError: (error) => {
       toast.error(getApiErrorMessage(error, "Unable to update profile."));
+    },
+  });
+}
+
+export function useChangePasswordMutation() {
+  return useMutation({
+    mutationFn: async (payload: ChangePasswordRequest) => {
+      return await userService.changePassword(payload);
+    },
+    onSuccess: () => {
+      toast.success("Password changed successfully.");
+    },
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, "Unable to change password."));
     },
   });
 }
