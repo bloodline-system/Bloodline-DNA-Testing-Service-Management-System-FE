@@ -1,8 +1,5 @@
 // steps.js - Custom reusable steps for CodeceptJS tests
 // Organized by feature: auth, homepage, etc.
-//
-// Đăng nhập sẵn user có role ADMIN/MANAGER (seed, không qua sign-up): xem
-// tests/auth/management-auth.steps.js — dùng cho E2E /manager/posts và màn hình cần quyền quản lý.
 
 const I = actor();
 

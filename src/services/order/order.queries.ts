@@ -1,12 +1,16 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import orderService, { type OrdersResponse, type NewOrdersResponse } from "./orderService";
+import orderService, {
+  type OrdersResponse,
+  type NewOrdersResponse,
+} from "./orderService";
 import { toast } from "sonner";
+import { AxiosError } from "axios";
 
 // Query Keys
 export const orderKeys = {
   all: ["orders"],
   lists: () => [...orderKeys.all, "list"],
-  list: (filters: any) => [...orderKeys.lists(), filters],
+  list: (filters: Record<string, unknown>) => [...orderKeys.lists(), filters],
   details: () => [...orderKeys.all, "detail"],
   detail: (id: number) => [...orderKeys.details(), id],
   new: () => [...orderKeys.all, "new"],
@@ -40,7 +44,8 @@ export const useNewOrdersQuery = () => {
 export const useOrderDetailQuery = (id: number | null) => {
   return useQuery({
     queryKey: id ? orderKeys.detail(id) : ["order-detail-disabled"],
-    queryFn: () => (id ? orderService.getOrderById(id) : Promise.reject("No ID")),
+    queryFn: () =>
+      id ? orderService.getOrderById(id) : Promise.reject("No ID"),
     enabled: !!id,
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
@@ -60,9 +65,11 @@ export const useAssignCollectionStaffMutation = () => {
       queryClient.invalidateQueries({ queryKey: orderKeys.all });
       queryClient.invalidateQueries({ queryKey: orderKeys.detail(orderId) });
     },
-    onError: (error: any) => {
-      const message = error?.response?.data?.message || "Failed to assign collection staff";
-      toast.error(message);
+    onError: (error: AxiosError) => {
+      const message =
+        (error?.response?.data as Record<string, unknown>)?.message ||
+        "Failed to assign collection staff";
+      toast.error(message as string);
     },
   });
 };
@@ -81,9 +88,11 @@ export const useAssignAnalysisStaffMutation = () => {
       queryClient.invalidateQueries({ queryKey: orderKeys.all });
       queryClient.invalidateQueries({ queryKey: orderKeys.detail(orderId) });
     },
-    onError: (error: any) => {
-      const message = error?.response?.data?.message || "Failed to assign analysis staff";
-      toast.error(message);
+    onError: (error: AxiosError) => {
+      const message =
+        (error?.response?.data as Record<string, unknown>)?.message ||
+        "Failed to assign analysis staff";
+      toast.error(message as string);
     },
   });
 };
@@ -102,8 +111,35 @@ export const useUpdateOrderStatusMutation = () => {
       queryClient.invalidateQueries({ queryKey: orderKeys.all });
       queryClient.invalidateQueries({ queryKey: orderKeys.detail(orderId) });
     },
+    onError: (error: AxiosError) => {
+      const message =
+        (error?.response?.data as Record<string, unknown>)?.message ||
+        "Failed to update order status";
+      toast.error(message as string);
+    },
+  });
+};
+
+/**
+ * Hook to create a new order
+ */
+export const useCreateOrderMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (orderData: {
+      testTypeId: number;
+      customerName: string;
+      email: string;
+      phone: string;
+      address: string;
+    }) => orderService.createOrder(orderData),
+    onSuccess: () => {
+      toast.success("Order created successfully");
+      queryClient.invalidateQueries({ queryKey: orderKeys.all });
+    },
     onError: (error: any) => {
-      const message = error?.response?.data?.message || "Failed to update order status";
+      const message = error?.response?.data?.message || "Failed to create order";
       toast.error(message);
     },
   });

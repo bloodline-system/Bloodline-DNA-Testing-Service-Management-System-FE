@@ -2,13 +2,17 @@ import type { ApiResponse, LoginResponseData } from "@/services/auth/types";
 import { useAuthStore } from "@/stores/auth/useAuthStore";
 import axios, { AxiosError, type AxiosRequestConfig } from "axios";
 
+const BASE_URL = import.meta.env.PROD
+  ? import.meta.env.VITE_API_URL + "/api"
+  : "/api";
+
 const api = axios.create({
-  baseURL: "/api",
+  baseURL: BASE_URL,
   withCredentials: true,
 });
 
 const refreshClient = axios.create({
-  baseURL: "/api",
+  baseURL: BASE_URL,
   withCredentials: true,
 });
 
@@ -62,16 +66,15 @@ const requestTokenRefresh = () => {
         useAuthStore.getState();
 
       if (!refreshToken) {
+        console.log("No refresh token available");
         clearSession();
         throw new Error("Missing refresh token.");
       }
-
       try {
         const response = await refreshClient.post<
           ApiResponse<LoginResponseData>
         >("/v1/auth/refresh-token", { refreshToken });
         const data = response.data.data;
-
         setSession({
           accessToken: data.access_token,
           refreshToken: data.refresh_token,
@@ -108,7 +111,6 @@ api.interceptors.request.use(async (config) => {
   config.headers = config.headers ?? {};
   (config.headers as Record<string, unknown>).Authorization =
     `Bearer ${tokenToUse}`;
-
   return config;
 });
 
@@ -124,13 +126,19 @@ api.interceptors.response.use(
       originalRequest._retry ||
       error.response?.status !== 401
     ) {
+      console.log(
+        "Response error (not 401 or already retried):",
+        error.response?.status,
+      );
       return Promise.reject(error);
     }
 
+    console.log("401 error detected, attempting token refresh");
     originalRequest._retry = true;
 
     try {
       const newAccessToken = await requestTokenRefresh();
+      console.log("Refresh successful, retrying request");
       originalRequest.headers = {
         ...originalRequest.headers,
         Authorization: `Bearer ${newAccessToken}`,
@@ -138,6 +146,7 @@ api.interceptors.response.use(
 
       return api(originalRequest);
     } catch (refreshError) {
+      console.log("Refresh failed, clearing session:", refreshError);
       useAuthStore.getState().clearSession();
       return Promise.reject(refreshError);
     }

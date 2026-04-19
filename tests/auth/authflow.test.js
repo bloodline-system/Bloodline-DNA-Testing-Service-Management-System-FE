@@ -1,5 +1,4 @@
 import { steps } from "../steps.js";
-// Đăng nhập ADMIN/MANAGER (seed) cho màn quản trị: import { managementAuthSteps } from "./management-auth.steps.js";
 
 Feature("Full Authentication Test Flow");
 
