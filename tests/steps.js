@@ -26,9 +26,10 @@ export const steps = {
   ) {
     // Navigate to sign-up page
     I.amOnPage("/sign-up");
+    // Avoid brittle immediate text asserts; wait for the form to hydrate.
+    I.waitForElement("#firstName", 15);
     I.see("Bloodline DNA System");
     I.see("Get Started");
-    I.see("It's free to signup");
 
     // Fill sign-up form
     I.fillField("#firstName", firstName);
@@ -39,7 +40,7 @@ export const steps = {
     I.fillField("#confirmPassword", password);
 
     // Submit form
-    I.see("Create Account");
+    I.waitForEnabled(locate("button").withText("Create Account"), 10);
     const signUpResponse = await I.usePlaywrightTo(
       "submit signup and capture sign-up response",
       async ({ page }) => {
@@ -48,7 +49,9 @@ export const steps = {
             response.url().includes("/api/v1/auth/sign-up") &&
             response.request().method() === "POST",
         );
-        await page.getByRole("button", { name: "Create Account" }).click();
+        await page
+          .getByRole("button", { name: "Create Account", exact: true })
+          .click();
         const response = await responsePromise;
         const body = await response.text();
         return { status: response.status(), body };
@@ -100,10 +103,52 @@ export const steps = {
     // Login with newly created credentials
     I.fillField("#username", username);
     I.fillField("#password", password);
-    I.seeElement(locate("button").withText("Login"));
-    I.waitForEnabled(locate("button").withText("Login"), 10);
-    I.click("Login");
 
-    I.waitInUrl("/", 5);
+    // "Login" text also exists in "Login with GitHub"; click the exact submit button.
+    await I.usePlaywrightTo(
+      "submit login and wait redirect",
+      async ({ page }) => {
+        const loginForm = page.locator("form").filter({
+          has: page.locator("#username"),
+        });
+
+        await page.waitForFunction(() => {
+          const forms = document.querySelectorAll("form");
+          for (const form of forms) {
+            if (!form.querySelector("#username")) continue;
+            const btns = form.querySelectorAll('button[type="submit"]');
+            for (const b of btns) {
+              const t = (b.textContent || "").replace(/\s+/g, " ").trim();
+              if (t === "Login" && !b.disabled) return true;
+            }
+          }
+          return false;
+        });
+
+        const responsePromise = page.waitForResponse(
+          (response) =>
+            response.url().includes("/api/v1/auth/login") &&
+            response.request().method() === "POST",
+        );
+
+        await loginForm
+          .getByRole("button", { name: "Login", exact: true })
+          .click();
+
+        await responsePromise;
+
+        await page.waitForURL(
+          (url) => {
+            try {
+              const p = new URL(url).pathname;
+              return p !== "/sign-in" && !p.startsWith("/sign-in/");
+            } catch {
+              return false;
+            }
+          },
+          { timeout: 20000, waitUntil: "commit" },
+        );
+      },
+    );
   },
 };

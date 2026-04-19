@@ -7,6 +7,7 @@ import {
   getAdminCredentials,
   getManagementCredentials,
   getManagerCredentials,
+  getE2eBaseUrl,
   e2eAbsoluteUrl,
   managementAuthSteps,
 } from "../auth/management-auth.steps.js";
@@ -18,6 +19,7 @@ import {
   isManagerPostsListRequest,
   waitForResponseMatching,
 } from "./network.utils.js";
+import { retryAsync } from "../utils/retry.js";
 
 const I = actor();
 
@@ -66,6 +68,107 @@ async function waitForPostListSettled(page) {
     POST_TEXT.loading,
     { timeout: 60000 },
   );
+}
+
+/**
+ * Read persisted auth session from zustand (key: auth-storage).
+ * @param {import('playwright').Page} page
+ */
+async function hasAuthSession(page) {
+  return page
+    .evaluate(() => {
+      try {
+        const raw = localStorage.getItem("auth-storage");
+        if (!raw) return false;
+        const parsed = JSON.parse(raw);
+        const token = parsed?.state?.accessToken;
+        return Boolean(token && typeof token === "string" && token.length > 10);
+      } catch {
+        return false;
+      }
+    })
+    .catch(() => false);
+}
+
+/**
+ * Probe access to Post Management by observing GET /api/v1/manager/posts.
+ * - status 200 => authorized
+ * - status 401/403 => authenticated but not authorized
+ * - redirect /sign-in => not authenticated
+ *
+ * @param {import('playwright').Page} page
+ */
+async function probePostManagementAccess(page) {
+  const listResponsePromise = page
+    .waitForResponse((r) => isManagerPostsListRequest(r), { timeout: 20000 })
+    .catch(() => null);
+
+  await page.goto(e2eAbsoluteUrl("/manager/posts"), {
+    waitUntil: "domcontentloaded",
+  });
+
+  await Promise.race([
+    listResponsePromise,
+    page
+      .waitForURL(/\/sign-in(?:\b|\/|\?|#)/, { timeout: 15000 })
+      .catch(() => null),
+    page
+      .getByText(POST_TEXT.heroHeading, { exact: true })
+      .waitFor({ state: "visible", timeout: 15000 })
+      .catch(() => null),
+    page
+      .getByText(POST_TEXT.loadError, { exact: true })
+      .waitFor({ state: "visible", timeout: 15000 })
+      .catch(() => null),
+  ]).catch(() => {});
+
+  const currentUrl = page.url();
+  if (/\/sign-in(?:\b|\/|\?|#)/.test(currentUrl)) {
+    return {
+      ok: false,
+      reason: "redirect_signin",
+      status: null,
+      url: currentUrl,
+    };
+  }
+
+  const res = await listResponsePromise;
+  const status = res ? res.status() : null;
+
+  if (status === 200) {
+    return { ok: true, reason: "ok", status, url: currentUrl };
+  }
+
+  if (status === 401 || status === 403) {
+    return { ok: false, reason: "api_unauthorized", status, url: currentUrl };
+  }
+
+  // If the request wasn't captured but hero is visible, treat as likely OK.
+  // (This avoids false negatives from fast cache/memoized queries.)
+  const heroVisible = await page
+    .getByText(POST_TEXT.heroHeading, { exact: true })
+    .isVisible()
+    .catch(() => false);
+
+  if (!res && heroVisible) {
+    return {
+      ok: true,
+      reason: "ui_ready_no_list_response",
+      status: null,
+      url: currentUrl,
+    };
+  }
+
+  const loadErrorVisible = await page
+    .getByText(POST_TEXT.loadError, { exact: true })
+    .isVisible()
+    .catch(() => false);
+
+  if (loadErrorVisible) {
+    return { ok: false, reason: "ui_load_error", status, url: currentUrl };
+  }
+
+  return { ok: false, reason: "unknown", status, url: currentUrl };
 }
 
 /**
@@ -164,6 +267,142 @@ export const postManagementSteps = {
 
   /** Đăng nhập (MANAGER/ADMIN) + mở trang quản lý bài viết — nên dùng trong Before() của test CRUD */
   loginForPostManagement,
+
+  /**
+   * Login as MANAGER seed only when needed.
+   * @param {string} [username]
+   * @param {string} [password]
+   * @param {{ force?: boolean }} [options]
+   */
+  async loginAsManagerIfNeeded(username, password, options = {}) {
+    const force = options.force ?? false;
+
+    if (!force) {
+      const alreadyLoggedIn = await I.usePlaywrightTo(
+        "check auth session",
+        async ({ page }) => {
+          // Ensure same origin for localStorage access.
+          if (!page.url().startsWith(getE2eBaseUrl())) {
+            await page.goto(e2eAbsoluteUrl("/"), {
+              waitUntil: "domcontentloaded",
+            });
+          }
+          return hasAuthSession(page);
+        },
+      );
+      if (alreadyLoggedIn) return;
+    }
+
+    await managementAuthSteps.loginAsManager(username, password);
+  },
+
+  /**
+   * Login as ADMIN seed only when needed.
+   * @param {string} [username]
+   * @param {string} [password]
+   * @param {{ force?: boolean }} [options]
+   */
+  async loginAsAdminIfNeeded(username, password, options = {}) {
+    const force = options.force ?? false;
+
+    if (!force) {
+      const alreadyLoggedIn = await I.usePlaywrightTo(
+        "check auth session",
+        async ({ page }) => {
+          if (!page.url().startsWith(getE2eBaseUrl())) {
+            await page.goto(e2eAbsoluteUrl("/"), {
+              waitUntil: "domcontentloaded",
+            });
+          }
+          return hasAuthSession(page);
+        },
+      );
+      if (alreadyLoggedIn) return;
+    }
+
+    await managementAuthSteps.loginAsAdmin(username, password);
+  },
+
+  /**
+   * ensureAuthorizedForPostManagement()
+   *
+   * Mandatory authorization strategy:
+   * 1) If NOT logged in -> login MANAGER
+   * 2) If logged in but cannot access -> re-login MANAGER
+   * 3) If still fail -> fallback ADMIN
+   * 4) If still fail -> throw clear error
+   */
+  async ensureAuthorizedForPostManagement() {
+    const attempts = [];
+
+    const probe = () =>
+      I.usePlaywrightTo("probe post management access", async ({ page }) => {
+        return retryAsync(() => probePostManagementAccess(page), {
+          retries: 1,
+          delayMs: 250,
+          shouldRetry: (error) =>
+            /Timeout|net::|Navigation|ERR_/.test(String(error)),
+        });
+      });
+
+    let result = await probe();
+    attempts.push({ step: "probe_current", ...result });
+
+    if (result.ok) {
+      await goToPostManagementCore();
+      return;
+    }
+
+    // 1) Not logged in -> login MANAGER
+    if (result.reason === "redirect_signin") {
+      await this.loginAsManagerIfNeeded(undefined, undefined, { force: true });
+      result = await probe();
+      attempts.push({ step: "login_manager", ...result });
+      if (result.ok) {
+        await goToPostManagementCore();
+        return;
+      }
+
+      // 2) Still failing after manager login -> re-login MANAGER once
+      await this.loginAsManagerIfNeeded(undefined, undefined, { force: true });
+      result = await probe();
+      attempts.push({ step: "relogin_manager", ...result });
+      if (result.ok) {
+        await goToPostManagementCore();
+        return;
+      }
+    } else {
+      // 2) Logged in but cannot access -> re-login MANAGER
+      await this.loginAsManagerIfNeeded(undefined, undefined, { force: true });
+      result = await probe();
+      attempts.push({ step: "relogin_manager", ...result });
+      if (result.ok) {
+        await goToPostManagementCore();
+        return;
+      }
+    }
+
+    // 3) Fallback ADMIN
+    await this.loginAsAdminIfNeeded(undefined, undefined, { force: true });
+    result = await probe();
+    attempts.push({ step: "fallback_admin", ...result });
+    if (result.ok) {
+      await goToPostManagementCore();
+      return;
+    }
+
+    // 4) Fail with a clear, actionable error.
+    const summarized = attempts
+      .map(
+        (a) =>
+          `${a.step}:${a.reason}:${a.status ?? "NO_STATUS"}:${String(a.url).slice(0, 80)}`,
+      )
+      .join(" | ");
+
+    throw new Error(
+      `ensureAuthorizedForPostManagement failed. Attempts=${summarized}`,
+    );
+  },
 
   /**
    * Mở trang quản lý bài viết và chờ list load xong (hoặc error UI).

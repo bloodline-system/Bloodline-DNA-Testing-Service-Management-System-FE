@@ -12,18 +12,6 @@ dist
 dist-ssr
 *.local
 
-# Environment variables
-.env
-.env.local
-.env.*.local
-.env.production
-.env.staging
-.env.development
-
-# Test artifacts
-output
-.codeceptrc
-
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -34,3 +22,6 @@ output
 *.njsproj
 *.sln
 *.sw?
+
+# Test output
+output/

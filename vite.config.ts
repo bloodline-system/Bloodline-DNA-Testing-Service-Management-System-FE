@@ -6,25 +6,6 @@ import path from "path";
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
-
-  return {
-    plugins: [react(), tailwindcss()],
-    resolve: {
-      alias: {
-        "@": path.resolve(__dirname, "./src"),
-      },
-    },
-    server: {
-      proxy: {
-        "/api": {
-          target: env.VITE_API_URL,
-          changeOrigin: true,
-          secure: false,
-        },
-      },
-    },
-export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), "");
   const apiTarget = env.VITE_API_URL || "http://localhost:8080";
 
   return {
@@ -33,6 +14,13 @@ export default defineConfig(({ mode }) => {
       alias: {
         "@": path.resolve(__dirname, "./src"),
       },
+    },
+    optimizeDeps: {
+      exclude: [
+        "@tailwindcss/oxide",
+        "@tailwindcss/oxide-win32-x64-msvc",
+        "@tailwindcss/oxide-win32-arm64-msvc",
+      ],
     },
     server: {
       proxy: {
@@ -50,6 +38,5 @@ export default defineConfig(({ mode }) => {
         },
       },
     },
-  };
   };
 });
