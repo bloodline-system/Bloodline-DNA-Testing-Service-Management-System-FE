@@ -23,7 +23,7 @@ class TestTypeService {
    * Get all available test types
    */
   async getAllTestTypes(): Promise<TestTypesResponse> {
-    const response = await axios.get("/api/v1/test-types");
+    const response = await axios.get("/v1/test-types");
     return response.data;
   }
 
@@ -31,7 +31,7 @@ class TestTypeService {
    * Get single test type by ID
    */
   async getTestTypeById(id: number): Promise<any> {
-    const response = await axios.get(`/api/v1/test-types/${id}`);
+    const response = await axios.get(`/v1/test-types/${id}`);
     return response.data;
   }
 }
