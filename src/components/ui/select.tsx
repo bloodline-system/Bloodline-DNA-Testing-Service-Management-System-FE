@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 "use client"
 
 import * as React from "react"
@@ -159,7 +158,6 @@ export {
   SelectScrollUpButton,
   SelectScrollDownButton,
 }
-=======
 import * as React from "react"
 import { Select as SelectPrimitive } from "radix-ui"
 
@@ -350,4 +348,3 @@ export {
   SelectTrigger,
   SelectValue,
 }
->>>>>>> origin/development
