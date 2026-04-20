@@ -23,6 +23,16 @@ const reports = [
     createdAt: '2024-01-02T10:00:00Z',
     generatedByRole: 'MANAGER',
   },
+  {
+    id: 100,
+    reportName: 'Created Report',
+    reportType: 'MONTHLY_REVENUE',
+    reportCategory: 'REVENUE',
+    reportStatus: 'PENDING',
+    reportData: 'Sample report data',
+    createdAt: new Date().toISOString(),
+    generatedByRole: 'MANAGER',
+  },
 ];
 const deletedReports = new Set();
 
@@ -237,6 +247,24 @@ const server = http.createServer(async (req, res) => {
         timestamp: new Date().toISOString(),
       });
     }
+    if (id === 100) {
+      console.log('GET /reports/100 called');
+      return jsonResponse(res, 200, {
+        code: 200,
+        message: 'Report retrieved successfully',
+        data: {
+          id: 100,
+          reportName: 'Created Report',
+          reportType: 'MONTHLY_REVENUE',
+          reportCategory: 'REVENUE',
+          reportStatus: 'PENDING',
+          reportData: 'Sample report data',
+          createdAt: new Date().toISOString(),
+          generatedByRole: 'MANAGER',
+        },
+        timestamp: new Date().toISOString(),
+      });
+    }
     const report = reports.find((r) => r.id === id);
     if (!report) {
       return jsonResponse(res, 404, {
@@ -255,6 +283,7 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (path === '/api/v1/manager/reports' && method === 'POST') {
+    console.log('POST /api/v1/manager/reports called');
     const body = await parseJson(req);
     const missing = !body?.reportName || !body?.reportType || !body?.reportCategory || !body?.reportData;
     if (missing) {
@@ -284,6 +313,7 @@ const server = http.createServer(async (req, res) => {
       generatedByRole: 'MANAGER',
     };
     reports.push(newReport);
+    console.log('reports.length after push:', reports.length);
     return jsonResponse(res, 200, {
       code: 200,
       message: 'Report created successfully',
@@ -324,6 +354,15 @@ const server = http.createServer(async (req, res) => {
 
   if (reportByIdMatch && method === 'DELETE') {
     const id = Number(reportByIdMatch[1]);
+    const exists = reports.some((r) => r.id === id) && !deletedReports.has(id);
+    if (!exists) {
+      return jsonResponse(res, 404, {
+        code: 404,
+        message: 'Report not found',
+        data: null,
+        timestamp: new Date().toISOString(),
+      });
+    }
     deletedReports.add(id);
     return jsonResponse(res, 200, {
       code: 200,
