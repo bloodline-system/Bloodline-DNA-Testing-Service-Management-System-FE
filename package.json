@@ -12,6 +12,8 @@
     "test:auth": "codeceptjs run tests/auth/*.test.js",
     "test:homepage": "codeceptjs run tests/homepage/*.test.js",
     "test:testkit": "codeceptjs run tests/testkit/*.test.js",
+    "test:manager": "codeceptjs run tests/manager/*.test.js",
+    "test:order_report_manager": "codeceptjs run tests/manager/order_report_manager.test.js",
     "test:debug": "codeceptjs run --debug",
     "test:headless": "HEADLESS=true codeceptjs run"
   },
