@@ -1,9 +1,21 @@
 import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { ChevronLeft, ChevronRight, Search, Plus } from "lucide-react";
 import { useOrdersQuery } from "@/services/order/order.queries";
@@ -37,7 +49,8 @@ const OrderPage = () => {
   // Filter and search
   const filteredOrders = useMemo(() => {
     return allOrders.filter((order) => {
-      const matchStatus = selectedStatus === "all" || order.orderStatus === selectedStatus;
+      const matchStatus =
+        selectedStatus === "all" || order.orderStatus === selectedStatus;
       const matchSearch =
         order.customerName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         order.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -50,7 +63,10 @@ const OrderPage = () => {
   // Pagination
   const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
   const startIndex = currentPage * itemsPerPage;
-  const paginatedOrders = filteredOrders.slice(startIndex, startIndex + itemsPerPage);
+  const paginatedOrders = filteredOrders.slice(
+    startIndex,
+    startIndex + itemsPerPage,
+  );
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
@@ -69,27 +85,32 @@ const OrderPage = () => {
 
   const handleCreateOrder = (e: React.FormEvent) => {
     e.preventDefault();
-    createOrderMutation.mutate({
-      testTypeId: parseInt(formData.testTypeId),
-      customerName: formData.customerName,
-      email: formData.email,
-      phone: formData.phone,
-      address: formData.address,
-    }, {
-      onSuccess: () => {
-        setShowCreateForm(false);
-        setFormData({
-          testTypeId: "",
-          customerName: "",
-          email: "",
-          phone: "",
-          address: "",
-        });
-      }
-    });
+    createOrderMutation.mutate(
+      {
+        testTypeId: parseInt(formData.testTypeId),
+        customerName: formData.customerName,
+        email: formData.email,
+        phone: formData.phone,
+        address: formData.address,
+      },
+      {
+        onSuccess: () => {
+          setShowCreateForm(false);
+          setFormData({
+            testTypeId: "",
+            customerName: "",
+            email: "",
+            phone: "",
+            address: "",
+          });
+        },
+      },
+    );
   };
 
-  const selectedTestType = testTypes.find(t => t.id.toString() === formData.testTypeId);
+  const selectedTestType = testTypes.find(
+    (t) => t.id.toString() === formData.testTypeId,
+  );
 
   if (isLoading) {
     return (
@@ -106,7 +127,9 @@ const OrderPage = () => {
       <div className="container mx-auto p-6">
         <Card className="border-red-200 bg-red-50">
           <CardContent className="pt-6">
-            <p className="text-red-800">Error loading orders. Please try again.</p>
+            <p className="text-red-800">
+              Error loading orders. Please try again.
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -118,8 +141,12 @@ const OrderPage = () => {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Order Management</h1>
-          <p className="text-gray-600 mt-2">View and manage all DNA testing orders</p>
+          <h1 className="text-3xl font-bold tracking-tight">
+            Order Management
+          </h1>
+          <p className="text-gray-600 mt-2">
+            View and manage all DNA testing orders
+          </p>
         </div>
         <Button onClick={() => setShowCreateForm(true)} className="gap-2">
           <Plus className="h-4 w-4" />
@@ -132,20 +159,30 @@ const OrderPage = () => {
         <Card>
           <CardHeader>
             <CardTitle>Create New Order</CardTitle>
-            <CardDescription>Fill in the details to create a new DNA testing order.</CardDescription>
+            <CardDescription>
+              Fill in the details to create a new DNA testing order.
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleCreateOrder} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="testTypeId">Test Type</Label>
-                  <Select value={formData.testTypeId} onValueChange={(value) => handleFormChange("testTypeId", value)}>
+                  <Select
+                    value={formData.testTypeId}
+                    onValueChange={(value) =>
+                      handleFormChange("testTypeId", value)
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select a test type" />
                     </SelectTrigger>
                     <SelectContent>
                       {testTypes.map((testType) => (
-                        <SelectItem key={testType.id} value={testType.id.toString()}>
+                        <SelectItem
+                          key={testType.id}
+                          value={testType.id.toString()}
+                        >
                           {testType.name} - ${testType.price}
                         </SelectItem>
                       ))}
@@ -175,7 +212,9 @@ const OrderPage = () => {
                   <Input
                     id="customerName"
                     value={formData.customerName}
-                    onChange={(e) => handleFormChange("customerName", e.target.value)}
+                    onChange={(e) =>
+                      handleFormChange("customerName", e.target.value)
+                    }
                     placeholder="Enter customer's full name"
                     required
                   />
@@ -206,7 +245,9 @@ const OrderPage = () => {
                   <Input
                     id="address"
                     value={formData.address}
-                    onChange={(e) => handleFormChange("address", e.target.value)}
+                    onChange={(e) =>
+                      handleFormChange("address", e.target.value)
+                    }
                     placeholder="Enter address"
                     required
                   />
@@ -215,7 +256,11 @@ const OrderPage = () => {
 
               <div className="flex gap-2 pt-4">
                 <Button type="submit">Create Order</Button>
-                <Button type="button" variant="outline" onClick={() => setShowCreateForm(false)}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowCreateForm(false)}
+                >
                   Cancel
                 </Button>
               </div>
@@ -239,7 +284,9 @@ const OrderPage = () => {
             <CardContent className="pt-6">
               <div className="text-center">
                 <p className="text-2xl font-bold">{count as number}</p>
-                <p className="text-sm text-gray-600 mt-1 capitalize">{status.toLowerCase()}</p>
+                <p className="text-sm text-gray-600 mt-1 capitalize">
+                  {status.toLowerCase()}
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -303,18 +350,26 @@ const OrderPage = () => {
             Orders ({filteredOrders.length})
             {selectedStatus !== "all" && ` - ${selectedStatus}`}
           </CardTitle>
-          <CardDescription>Showing {paginatedOrders.length} of {filteredOrders.length} orders</CardDescription>
+          <CardDescription>
+            Showing {paginatedOrders.length} of {filteredOrders.length} orders
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b">
-                  <th className="px-4 py-3 text-left font-semibold">Order ID</th>
-                  <th className="px-4 py-3 text-left font-semibold">Customer</th>
+                  <th className="px-4 py-3 text-left font-semibold">
+                    Order ID
+                  </th>
+                  <th className="px-4 py-3 text-left font-semibold">
+                    Customer
+                  </th>
                   <th className="px-4 py-3 text-left font-semibold">Email</th>
                   <th className="px-4 py-3 text-left font-semibold">Phone</th>
-                  <th className="px-4 py-3 text-left font-semibold">Test Type</th>
+                  <th className="px-4 py-3 text-left font-semibold">
+                    Test Type
+                  </th>
                   <th className="px-4 py-3 text-left font-semibold">Price</th>
                   <th className="px-4 py-3 text-left font-semibold">Status</th>
                   <th className="px-4 py-3 text-left font-semibold">Date</th>
@@ -326,20 +381,30 @@ const OrderPage = () => {
                   paginatedOrders.map((order) => (
                     <tr key={order.id} className="border-b hover:bg-gray-50">
                       <td className="px-4 py-3 font-semibold">#{order.id}</td>
-                      <td className="px-4 py-3">{order.customerName || "N/A"}</td>
-                      <td className="px-4 py-3 text-gray-600">{order.email || "N/A"}</td>
-                      <td className="px-4 py-3 text-gray-600">{order.phone || "N/A"}</td>
+                      <td className="px-4 py-3">
+                        {order.customerName || "N/A"}
+                      </td>
+                      <td className="px-4 py-3 text-gray-600">
+                        {order.email || "N/A"}
+                      </td>
+                      <td className="px-4 py-3 text-gray-600">
+                        {order.phone || "N/A"}
+                      </td>
                       <td className="px-4 py-3">{order.testType || "N/A"}</td>
                       <td className="px-4 py-3 font-semibold text-green-600">
                         ${order.totalPrice || 0}
                       </td>
                       <td className="px-4 py-3">
-                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(order.orderStatus)}`}>
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(order.orderStatus)}`}
+                        >
                           {order.orderStatus}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-gray-600">
-                        {order.createdAt ? new Date(order.createdAt).toLocaleDateString() : "N/A"}
+                        {order.createdAt
+                          ? new Date(order.createdAt).toLocaleDateString()
+                          : "N/A"}
                       </td>
                       <td className="px-4 py-3">
                         <Button variant="outline" size="sm">
@@ -350,7 +415,10 @@ const OrderPage = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={9} className="px-4 py-8 text-center text-gray-500">
+                    <td
+                      colSpan={9}
+                      className="px-4 py-8 text-center text-gray-500"
+                    >
                       No orders found
                     </td>
                   </tr>
@@ -377,7 +445,9 @@ const OrderPage = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setCurrentPage(Math.min(totalPages - 1, currentPage + 1))}
+                  onClick={() =>
+                    setCurrentPage(Math.min(totalPages - 1, currentPage + 1))
+                  }
                   disabled={currentPage === totalPages - 1}
                 >
                   <ChevronRight className="h-4 w-4" />

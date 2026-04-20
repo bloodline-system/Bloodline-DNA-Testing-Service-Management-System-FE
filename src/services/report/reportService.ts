@@ -70,7 +70,7 @@ class ReportService {
       sortDir,
     });
 
-    const response = await axios.get(`/api/v1/manager/reports?${params}`);
+    const response = await axios.get(`/v1/manager/reports?${params}`);
     return response.data as ReportsResponse;
   }
 
@@ -78,7 +78,7 @@ class ReportService {
    * Get single report by ID
    */
   async getReportById(id: number): Promise<ApiResponse<Report>> {
-    const response = await axios.get(`/api/v1/manager/reports/${id}`);
+    const response = await axios.get(`/v1/manager/reports/${id}`);
     return response.data as ApiResponse<Report>;
   }
 
@@ -88,7 +88,7 @@ class ReportService {
   async createReport(
     payload: CreateReportPayload,
   ): Promise<ApiResponse<unknown>> {
-    const response = await axios.post("/api/v1/manager/reports", payload);
+    const response = await axios.post("/v1/manager/reports", payload);
     return response.data as ApiResponse<unknown>;
   }
 
@@ -100,7 +100,7 @@ class ReportService {
     payload: UpdateReportStatusPayload,
   ): Promise<ApiResponse<unknown>> {
     const response = await axios.put(
-      `/api/v1/manager/reports/${id}/status`,
+      `/v1/manager/reports/${id}/status`,
       payload,
     );
     return response.data as ApiResponse<unknown>;
@@ -110,7 +110,7 @@ class ReportService {
    * Download report PDF
    */
   async downloadReport(id: number): Promise<Blob> {
-    const response = await axios.get(`/api/v1/manager/reports/${id}/download`, {
+    const response = await axios.get(`/v1/manager/reports/${id}/download`, {
       responseType: "blob",
     });
     return response.data as Blob;
