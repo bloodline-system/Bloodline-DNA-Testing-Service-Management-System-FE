@@ -24,39 +24,39 @@ const data = {
   navMain: [
     {
       title: "Dashboard",
-      url: "#",
+      url: "/dashboard",
       icon: (
         <LayoutDashboardIcon
         />
       ),
     },
     {
-      title: "Lifecycle",
-      url: "#",
+      title: "Orders",
+      url: "/order",
       icon: (
-        <ListIcon
+        <FileIcon
         />
       ),
     },
     {
-      title: "Analytics",
-      url: "#",
+      title: "Reports",
+      url: "/report",
       icon: (
-        <ChartBarIcon
+        <FileChartColumnIcon
         />
       ),
     },
     {
-      title: "Projects",
-      url: "#",
+      title: "Test Kits",
+      url: "/test-kits",
       icon: (
-        <FolderIcon
+        <DatabaseIcon
         />
       ),
     },
     {
-      title: "Team",
-      url: "#",
+      title: "Profile",
+      url: "/profile",
       icon: (
         <UsersIcon
         />
@@ -65,57 +65,25 @@ const data = {
   ],
   navClouds: [
     {
-      title: "Capture",
+      title: "Manager",
       icon: (
-        <CameraIcon
+        <Settings2Icon
         />
       ),
       isActive: true,
       url: "#",
       items: [
         {
-          title: "Active Proposals",
-          url: "#",
+          title: "Manage Orders",
+          url: "/order",
         },
         {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Proposal",
-      icon: (
-        <FileTextIcon
-        />
-      ),
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
+          title: "Manage Reports",
+          url: "/manager/reports",
         },
         {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Prompts",
-      icon: (
-        <FileTextIcon
-        />
-      ),
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
+          title: "Manage Posts",
+          url: "/manager/posts",
         },
       ],
     },

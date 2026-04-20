@@ -11,6 +11,7 @@ import TestKitPage from "@/pages/TestKitPage";
 import OrderPage from "@/pages/OrderPage";
 import PostManagementPage from "@/pages/PostManagementPage";
 import ReportPage from "@/pages/ReportPage";
+import ReportManagementPage from "@/pages/ReportManagementPage";
 import { BrowserRouter, Routes, Route } from "react-router";
 
 const AppRoutes = () => {
@@ -26,6 +27,7 @@ const AppRoutes = () => {
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/order" element={<OrderPage />} />
           <Route path="/report" element={<ReportPage />} />
+          <Route path="/manager/reports" element={<ReportManagementPage />} />
           <Route path="/manager/posts" element={<PostManagementPage />} />
         </Route>
 
