@@ -1,9 +1,7 @@
-import * as React from "react"
+import * as React from "react";
 
-import { NavDocuments } from "@/components/nav-documents"
-import { NavMain } from "@/components/nav-main"
-import { NavSecondary } from "@/components/nav-secondary"
-import { NavUser } from "@/components/nav-user"
+import { NavMain } from "@/components/nav-main";
+import { NavUser } from "@/components/nav-user";
 import {
   Sidebar,
   SidebarContent,
@@ -12,8 +10,16 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
-import { LayoutDashboardIcon, ListIcon, ChartBarIcon, FolderIcon, UsersIcon, CameraIcon, FileTextIcon, Settings2Icon, CircleHelpIcon, SearchIcon, DatabaseIcon, FileChartColumnIcon, FileIcon, CommandIcon } from "lucide-react"
+} from "@/components/ui/sidebar";
+import {
+  LayoutDashboardIcon,
+  FileTextIcon,
+  FileChartColumnIcon,
+  CommandIcon,
+  BeakerIcon,
+  ShoppingCartIcon,
+  StethoscopeIcon,
+} from "lucide-react";
 
 const data = {
   user: {
@@ -23,8 +29,14 @@ const data = {
   },
   navMain: [
     {
+      title: "Home",
+      url: "/",
+      icon: <LayoutDashboardIcon />,
+    },
+    {
       title: "Dashboard",
       url: "/dashboard",
+<<<<<<< HEAD
       icon: (
         <LayoutDashboardIcon
         />
@@ -141,6 +153,37 @@ const data = {
     },
   ],
 }
+=======
+      icon: <LayoutDashboardIcon />,
+    },
+    {
+      title: "Test Kits",
+      url: "/test-kits",
+      icon: <BeakerIcon />,
+    },
+    {
+      title: "Report",
+      url: "/report",
+      icon: <FileChartColumnIcon />,
+    },
+    {
+      title: "Services",
+      url: "/manager/medical-services",
+      icon: <StethoscopeIcon />,
+    },
+    {
+      title: "Posts",
+      url: "/manager/posts",
+      icon: <FileTextIcon />,
+    },
+    {
+      title: "Order",
+      url: "/order",
+      icon: <ShoppingCartIcon />,
+    },
+  ],
+};
+>>>>>>> 4bd60cdd6da8104b97492694cc458ed0bd8f1dc9
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
@@ -162,12 +205,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavDocuments items={data.documents} />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />
       </SidebarFooter>
     </Sidebar>
-  )
+  );
 }

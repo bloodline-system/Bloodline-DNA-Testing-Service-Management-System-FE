@@ -278,6 +278,7 @@ const HomePage = () => {
               { text: "FAQs", url: "#faq" },
               { text: "How It Works", url: "#how-it-works" },
               { text: "Contact", url: "#contact" },
+              { text: "Order Management", url: "/orders" },
             ],
           },
           {
