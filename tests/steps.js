@@ -7,6 +7,28 @@ export const steps = {
   // ========== AUTHENTICATION STEPS ==========
 
   /**
+   * Sign in with username + password (same fields as LoginForm).
+   * Requires FE + BE; redirects to "/" on success.
+   */
+  async loginWithUsernamePassword(username, password) {
+    I.amOnPage('/sign-in');
+    I.see('Login to your account');
+    I.fillField('#username', username);
+    I.fillField('#password', password);
+    I.waitForEnabled('form button[type="submit"]', 10);
+    I.click('form button[type="submit"]');
+    I.waitInUrl('/', 20);
+  },
+
+  /** Open employee management (requires ADMIN or MANAGER session). */
+  goToEmployeeManagement() {
+    I.amOnPage('/admin/employees');
+  },
+
+  /**
+   * Complete signup to signin workflow
+   */
+  /**
    * Complete signup to signin workflow
    * 1. Navigate to signup page
    * 2. Fill form with provided credentials

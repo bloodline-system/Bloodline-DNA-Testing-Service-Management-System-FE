@@ -1,7 +1,9 @@
 import {
   ProtectedRoute,
   AuthRoute,
+  RoleProtectedRoute,
 } from "@/components/layout/auth/protected-route";
+import EmployeeManagementPage from "@/pages/EmployeeManagementPage";
 import DashBoardPage from "@/pages/DashBoard/DashBoardPage";
 import HomePage from "@/pages/HomePage";
 import ProfilePage from "@/pages/ProfilePage";
@@ -45,6 +47,9 @@ const AppRoutes = () => {
           />
 >>>>>>> 4bd60cdd6da8104b97492694cc458ed0bd8f1dc9
           <Route path="/manager/posts" element={<PostManagementPage />} />
+        </Route>
+        <Route element={<RoleProtectedRoute allow={["ADMIN", "MANAGER"]} />}>
+          <Route path="/admin/employees" element={<EmployeeManagementPage />} />
         </Route>
 
         {/* Auth routes */}
