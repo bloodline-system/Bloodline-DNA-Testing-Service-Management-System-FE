@@ -9,16 +9,20 @@ export interface ApiResponse<T = unknown> {
 
 export interface Report {
   id: number;
+  reportName?: string;
+  reportType?: string;
+  reportCategory?: string;
   reportStatus: string;
+  reportData?: string;
+  createdAt?: string;
   generatedByRole?: string;
   testType?: string;
-  createdAt?: string;
+  result?: string;
+  notes?: string;
   updatedAt?: string;
   approvedAt?: string;
   rejectedAt?: string;
   filePath?: string;
-  result?: string;
-  notes?: string;
   [key: string]: unknown;
 }
 
@@ -26,19 +30,22 @@ export interface ReportsResponse {
   code: number;
   data: {
     content: Report[];
-    pageNumber: number;
+    currentPage: number;
     pageSize: number;
     totalElements: number;
     totalPages: number;
+    pageTitle?: string;
+    stats?: Record<string, unknown>;
   };
   message: string;
   timestamp: string;
 }
 
 export interface CreateReportPayload {
-  testType?: string;
-  result?: string;
-  notes?: string;
+  reportName: string;
+  reportType: string;
+  reportCategory: string;
+  reportData: string;
   [key: string]: unknown;
 }
 

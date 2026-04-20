@@ -36,6 +36,124 @@ const data = {
     {
       title: "Dashboard",
       url: "/dashboard",
+<<<<<<< HEAD
+      icon: (
+        <LayoutDashboardIcon
+        />
+      ),
+    },
+    {
+      title: "Orders",
+      url: "/order",
+      icon: (
+        <FileIcon
+        />
+      ),
+    },
+    {
+      title: "Reports",
+      url: "/report",
+      icon: (
+        <FileChartColumnIcon
+        />
+      ),
+    },
+    {
+      title: "Test Kits",
+      url: "/test-kits",
+      icon: (
+        <DatabaseIcon
+        />
+      ),
+    },
+    {
+      title: "Profile",
+      url: "/profile",
+      icon: (
+        <UsersIcon
+        />
+      ),
+    },
+  ],
+  navClouds: [
+    {
+      title: "Manager",
+      icon: (
+        <Settings2Icon
+        />
+      ),
+      isActive: true,
+      url: "#",
+      items: [
+        {
+          title: "Manage Orders",
+          url: "/order",
+        },
+        {
+          title: "Manage Reports",
+          url: "/manager/reports",
+        },
+        {
+          title: "Manage Posts",
+          url: "/manager/posts",
+        },
+      ],
+    },
+  ],
+  navSecondary: [
+    {
+      title: "Settings",
+      url: "#",
+      icon: (
+        <Settings2Icon
+        />
+      ),
+    },
+    {
+      title: "Get Help",
+      url: "#",
+      icon: (
+        <CircleHelpIcon
+        />
+      ),
+    },
+    {
+      title: "Search",
+      url: "#",
+      icon: (
+        <SearchIcon
+        />
+      ),
+    },
+  ],
+  documents: [
+    {
+      name: "Data Library",
+      url: "#",
+      icon: (
+        <DatabaseIcon
+        />
+      ),
+    },
+    {
+      name: "Reports",
+      url: "#",
+      icon: (
+        <FileChartColumnIcon
+        />
+      ),
+    },
+    {
+      name: "Word Assistant",
+      url: "#",
+      icon: (
+        <FileIcon
+        />
+      ),
+    },
+  ],
+}
+=======
       icon: <LayoutDashboardIcon />,
     },
     {
@@ -65,6 +183,7 @@ const data = {
     },
   ],
 };
+>>>>>>> 4bd60cdd6da8104b97492694cc458ed0bd8f1dc9
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
